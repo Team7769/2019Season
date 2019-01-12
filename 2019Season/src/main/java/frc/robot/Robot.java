@@ -8,6 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import frc.robot.Utilities.RobotControllerMap;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -20,8 +21,14 @@ public class Robot extends TimedRobot {
   /**
    * Version: 1.0
    */
+  private RobotControllerMap _robotControllers;
+
+  private static final int kDriverUsbSlot = 0;
+  private static final int kOperatorUsbSlot = 1;
+
   @Override
   public void robotInit() {
+    _robotControllers = new RobotControllerMap(kDriverUsbSlot, kOperatorUsbSlot);
   }
 
   @Override
@@ -38,6 +45,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
+    _robotControllers.getDriverJoystick().getButtonCount();
   }
 
   @Override
