@@ -8,6 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Utilities.RobotControllerMap;
 
 /**
@@ -22,6 +23,8 @@ public class Robot extends TimedRobot {
    * Version: 1.0
    */
   private RobotControllerMap _robotControllers;
+  private XboxController _driverController;
+  private XboxController _operatorController;
 
   private static final int kDriverUsbSlot = 0;
   private static final int kOperatorUsbSlot = 1;
@@ -29,6 +32,8 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     _robotControllers = new RobotControllerMap(kDriverUsbSlot, kOperatorUsbSlot);
+    _driverController = _robotControllers.getDriverController();
+    _operatorController = _robotControllers.getOperatorController();
   }
 
   @Override
@@ -45,7 +50,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    _robotControllers.getDriverJoystick().getButtonCount();
+    
   }
 
   @Override

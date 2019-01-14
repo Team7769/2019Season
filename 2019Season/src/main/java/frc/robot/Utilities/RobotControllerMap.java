@@ -1,19 +1,20 @@
 package frc.robot.Utilities;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 
 public class RobotControllerMap {
-    private Joystick _driverController;
-    private Joystick _operatorController;
+    private XboxController _driverController;
+    private XboxController _operatorController;
 
     public RobotControllerMap(int driverUsbSlot, int operatorUsbSlot) {
-        _driverController = new Joystick(driverUsbSlot);
-        _operatorController = new Joystick(operatorUsbSlot);
+        _driverController = new XboxController(driverUsbSlot);
+        _operatorController = new XboxController(operatorUsbSlot);
     }
-    public Joystick getDriverJoystick(){
+    public XboxController getDriverController(){
         return _driverController;
     }
-    public Joystick getOperatorJoystick(){
+    public XboxController getOperatorController(){
         return _operatorController;
     }
 }
