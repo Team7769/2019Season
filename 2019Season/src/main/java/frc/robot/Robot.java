@@ -9,7 +9,9 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.Configuration.Constants;
 import frc.robot.Utilities.RobotControllerMap;
+import frc.robot.Utilities.RobotMap;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -23,15 +25,14 @@ public class Robot extends TimedRobot {
    * Version: 1.0
    */
   private RobotControllerMap _robotControllers;
+  private RobotMap _robotMap;
   private XboxController _driverController;
   private XboxController _operatorController;
 
-  private static final int kDriverUsbSlot = 0;
-  private static final int kOperatorUsbSlot = 1;
-
   @Override
   public void robotInit() {
-    _robotControllers = new RobotControllerMap(kDriverUsbSlot, kOperatorUsbSlot);
+    _robotControllers = new RobotControllerMap(Constants.kDriverControllerSlot, Constants.kOperatorControllerSlot);
+    _robotMap = new RobotMap();
     _driverController = _robotControllers.getDriverController();
     _operatorController = _robotControllers.getOperatorController();
   }
