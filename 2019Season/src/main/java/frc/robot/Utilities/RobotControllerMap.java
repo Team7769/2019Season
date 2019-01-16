@@ -1,6 +1,5 @@
 package frc.robot.Utilities;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 
 public class RobotControllerMap {
