@@ -1,4 +1,4 @@
-package frc.robot.Subsystem;
+package frc.robot.Subsystems;
 
 public interface Subsystem {
     public void WriteToDashboard();
