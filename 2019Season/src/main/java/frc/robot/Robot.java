@@ -59,9 +59,10 @@ public class Robot extends TimedRobot {
     teleopDrive();
   }
   public void teleopDrive(){
-    boolean isQuickTurn = _driverController.getY(Hand.kLeft) > 0.05 && _driverController.getX(Hand.kRight) > 0.5;
-    
-    _driveTrain.curvatureDrive(_driverController.getY(Hand.kLeft), _driverController.getX(Hand.kRight), isQuickTurn);
+    _driveTrain.curvatureDrive(_driverController.getY(Hand.kLeft), _driverController.getX(Hand.kRight), getQuickTurn());
+  }
+  public boolean getQuickTurn() {
+    return _driverController.getAButton();
   }
 
   @Override
