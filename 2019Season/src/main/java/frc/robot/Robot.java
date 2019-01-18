@@ -9,7 +9,9 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import frc.robot.Configuration.Constants;
+import frc.robot.Subsystems.DriveTrain;
 import frc.robot.Utilities.RobotControllerMap;
 import frc.robot.Utilities.RobotMap;
 
@@ -26,6 +28,7 @@ public class Robot extends TimedRobot {
    */
   private RobotControllerMap _robotControllers;
   private RobotMap _robotMap;
+  private DriveTrain _driveTrain;
   private XboxController _driverController;
   private XboxController _operatorController;
 
@@ -33,6 +36,8 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     _robotControllers = new RobotControllerMap(Constants.kDriverControllerSlot, Constants.kOperatorControllerSlot);
     _robotMap = new RobotMap();
+
+    _driveTrain = new DriveTrain(_robotMap.getLeftDriveSpark(), _robotMap.getRightDriveSpark());
     _driverController = _robotControllers.getDriverController();
     _operatorController = _robotControllers.getOperatorController();
   }
@@ -51,7 +56,13 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    
+    teleopDrive();
+  }
+  public void teleopDrive(){
+    _driveTrain.curvatureDrive(_driverController.getY(Hand.kLeft), _driverController.getX(Hand.kRight), getQuickTurn());
+  }
+  public boolean getQuickTurn() {
+    return _driverController.getAButton();
   }
 
   @Override
