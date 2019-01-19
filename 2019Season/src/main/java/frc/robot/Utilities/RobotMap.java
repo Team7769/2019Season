@@ -20,8 +20,8 @@ public class RobotMap {
     private TalonSRX _rightArm;
     private TalonSRX _leftElevator;
     private TalonSRX _rightElevator;
-    private TalonSRX _leftCollector;
-    private TalonSRX _rightCollector;
+    private TalonSRX _topCollector;
+    private TalonSRX _bottomCollector;
 
     public RobotMap(){
         _lfDrive = new CANSparkMax(Constants.kLFDriveId, MotorType.kBrushless);
@@ -44,8 +44,8 @@ public class RobotMap {
         _rightArm = new TalonSRX(Constants.kRArmId);
         _leftElevator = new TalonSRX(Constants.kLElevatorId);
         _rightElevator = new TalonSRX(Constants.kRElevatorId);
-        _leftCollector = new TalonSRX(Constants.kLCollectorId);
-        _rightCollector = new TalonSRX(Constants.kRCollectorId);
+        _topCollector = new TalonSRX(Constants.kTCollectorId);
+        _bottomCollector = new TalonSRX(Constants.kBCollectorId);
     }
     public CANSparkMax getLeftDriveSpark(){
         return _lfDrive;
@@ -65,10 +65,10 @@ public class RobotMap {
     public TalonSRX getRightElevatorTalon(){
         return _rightElevator;
     }
-    public TalonSRX getLeftCollectorTalon(){
-        return _leftCollector;
+    public TalonSRX getTopCollectorTalon(){
+        return _topCollector;
     }
-    public TalonSRX getRightCollectorTalon(){
-        return _rightCollector;
+    public TalonSRX getBottomCollectorTalon(){
+        return _bottomCollector;
     }
 }
