@@ -40,12 +40,15 @@ public class RobotMap {
         _rrDrive = new CANSparkMax(Constants.kRRDriveId, MotorType.kBrushless);
         _rrDrive.follow(_rfDrive);
 
-        _leftArm = new TalonSRX(Constants.kLArmId);
-        _rightArm = new TalonSRX(Constants.kRArmId);
-        _leftElevator = new TalonSRX(Constants.kLElevatorId);
-        _rightElevator = new TalonSRX(Constants.kRElevatorId);
-        _topCollector = new TalonSRX(Constants.kTCollectorId);
-        _bottomCollector = new TalonSRX(Constants.kBCollectorId);
+        if (!Constants.kIsTestRobot){
+            _leftArm = new TalonSRX(Constants.kLArmId);
+            _rightArm = new TalonSRX(Constants.kRArmId);
+            _leftElevator = new TalonSRX(Constants.kLElevatorId);
+            _rightElevator = new TalonSRX(Constants.kRElevatorId);
+            _topCollector = new TalonSRX(Constants.kTCollectorId);
+            _bottomCollector = new TalonSRX(Constants.kBCollectorId);
+        }
+        
     }
     public CANSparkMax getLeftDriveSpark(){
         return _lfDrive;

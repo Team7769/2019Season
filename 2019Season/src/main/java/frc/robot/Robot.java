@@ -53,17 +53,19 @@ public class Robot extends TimedRobot {
     _driveTrain = new DriveTrain(_robotMap.getLeftDriveSpark(), _robotMap.getRightDriveSpark());
     _driverController = _robotControllers.getDriverController();
     _operatorController = _robotControllers.getOperatorController();
-
-    _hab3 = new Hab3();
-    _arm = new Arm(_robotMap.getLeftArmTalon(), _robotMap.getRightArmTalon());
-    _elevator = new Elevator(_robotMap.getLeftElevatorTalon(), _robotMap.getRightElevatorTalon());
-    _collector = new Collector(_robotMap.getTopCollectorTalon(), _robotMap.getBottomCollectorTalon());
-
     _subsystems.add(_driveTrain);
-    _subsystems.add(_collector);
-    _subsystems.add(_arm);
-    _subsystems.add(_elevator);
-    _subsystems.add(_collector);
+
+    if (!Constants.kIsTestRobot){
+      _hab3 = new Hab3();
+      _arm = new Arm(_robotMap.getLeftArmTalon(), _robotMap.getRightArmTalon());
+      _elevator = new Elevator(_robotMap.getLeftElevatorTalon(), _robotMap.getRightElevatorTalon());
+      _collector = new Collector(_robotMap.getTopCollectorTalon(), _robotMap.getBottomCollectorTalon());
+      _subsystems.add(_collector);
+      _subsystems.add(_arm);
+      _subsystems.add(_elevator);
+      _subsystems.add(_collector);
+    }
+    
   }
 
   @Override
@@ -82,9 +84,12 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     teleopDrive();
-    teleopElevator();
-    teleopArm();
-    teleopCollector();
+
+    if (!Constants.kIsTestRobot){
+      teleopElevator();
+      teleopArm();
+      teleopCollector();
+    }
   }
   public void teleopDrive(){
     _driveTrain.curvatureDrive(_driverController.getY(Hand.kLeft), _driverController.getX(Hand.kRight), getQuickTurn());
