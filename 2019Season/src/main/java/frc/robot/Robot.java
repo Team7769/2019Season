@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
@@ -16,6 +18,7 @@ import frc.robot.Subsystems.Collector;
 import frc.robot.Subsystems.DriveTrain;
 import frc.robot.Subsystems.Elevator;
 import frc.robot.Subsystems.Hab3;
+import frc.robot.Subsystems.Subsystem;
 import frc.robot.Utilities.RobotControllerMap;
 import frc.robot.Utilities.RobotMap;
 
@@ -40,6 +43,8 @@ public class Robot extends TimedRobot {
   private XboxController _driverController;
   private XboxController _operatorController;
 
+  private ArrayList<Subsystem> _subsystems;
+
   @Override
   public void robotInit() {
     _robotControllers = new RobotControllerMap(Constants.kDriverControllerSlot, Constants.kOperatorControllerSlot);
@@ -53,6 +58,12 @@ public class Robot extends TimedRobot {
     _arm = new Arm(_robotMap.getLeftArmTalon(), _robotMap.getRightArmTalon());
     _elevator = new Elevator(_robotMap.getLeftElevatorTalon(), _robotMap.getRightElevatorTalon());
     _collector = new Collector(_robotMap.getTopCollectorTalon(), _robotMap.getBottomCollectorTalon());
+
+    _subsystems.add(_driveTrain);
+    _subsystems.add(_collector);
+    _subsystems.add(_arm);
+    _subsystems.add(_elevator);
+    _subsystems.add(_collector);
   }
 
   @Override
@@ -70,12 +81,37 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     teleopDrive();
+    teleopElevator();
+    teleopArm();
+    teleopCollector();
   }
   public void teleopDrive(){
     _driveTrain.curvatureDrive(_driverController.getY(Hand.kLeft), _driverController.getX(Hand.kRight), getQuickTurn());
   }
   public boolean getQuickTurn() {
     return _driverController.getAButton();
+  }
+  public void teleopElevator(){
+    if (Math.abs(_operatorController.getY(Hand.kLeft)) > .05)
+    {
+      _elevator.setSpeed(_operatorController.getY(Hand.kLeft));
+    }
+  }
+  public void teleopArm(){
+    if (Math.abs(_operatorController.getX(Hand.kRight)) > .05)
+    {
+      _arm.setSpeed(_operatorController.getX(Hand.kRight));
+    }
+  }
+  public void teleopCollector(){
+    if (Math.abs(_operatorController.getTriggerAxis(Hand.kLeft)) > .05){
+      _collector.setSpeed(_operatorController.getTriggerAxis(Hand.kLeft));
+    } else if (Math.abs(_operatorController.getTriggerAxis(Hand.kRight)) > .05)
+    {
+      _collector.setSpeed(_operatorController.getTriggerAxis(Hand.kRight));
+    } else {
+      _collector.setSpeed(0.0);
+    }
   }
 
   @Override
@@ -84,6 +120,11 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testPeriodic() {
+  }
+
+  @Override
+  public void robotPeriodic(){
+    _subsystems.forEach((s) -> s.WriteToDashboard());
   }
 
 }
