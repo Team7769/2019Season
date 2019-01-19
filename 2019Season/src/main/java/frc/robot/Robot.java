@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import frc.robot.Configuration.Constants;
 import frc.robot.Subsystems.Arm;
+import frc.robot.Subsystems.Collector;
 import frc.robot.Subsystems.DriveTrain;
 import frc.robot.Subsystems.Elevator;
 import frc.robot.Subsystems.Hab3;
@@ -35,6 +36,7 @@ public class Robot extends TimedRobot {
   private Elevator _elevator;
   private Arm _arm;
   private Hab3 _hab3;
+  private Collector _collector;
   private XboxController _driverController;
   private XboxController _operatorController;
 
@@ -50,6 +52,7 @@ public class Robot extends TimedRobot {
     _hab3 = new Hab3();
     _arm = new Arm(_robotMap.getLeftArmTalon(), _robotMap.getRightArmTalon());
     _elevator = new Elevator(_robotMap.getLeftElevatorTalon(), _robotMap.getRightElevatorTalon());
+    _collector = new Collector(_robotMap.getTopCollectorTalon(), _robotMap.getBottomCollectorTalon());
   }
 
   @Override
