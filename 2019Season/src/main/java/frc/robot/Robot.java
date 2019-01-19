@@ -7,7 +7,9 @@
 
 package frc.robot;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Map;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
@@ -47,6 +49,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
+    Map<String, String> env = System.getenv();
+    String path = env.get("HOME") + "/RobotConfig.csv";
+    Constants.loadConstantsFromFilePath();
+
     _robotControllers = new RobotControllerMap(Constants.kDriverControllerSlot, Constants.kOperatorControllerSlot);
     _robotMap = new RobotMap();
 
