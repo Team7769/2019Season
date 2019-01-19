@@ -68,6 +68,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+    _subsystems.forEach((s) -> s.ResetSensors());
   }
 
   @Override

@@ -26,5 +26,9 @@ public class Collector implements Subsystem {
         SmartDashboard.putNumber("bottomCollectorSpeed", _bottomCollector.getSelectedSensorVelocity());
         SmartDashboard.putNumber("bottomCollectorPosition", _bottomCollector.getSelectedSensorPosition());
     }
+	
+	public void ResetSensors() {
+		//Do nothing
+	}
 
 }

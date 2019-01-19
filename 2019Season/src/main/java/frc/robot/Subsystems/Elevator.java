@@ -52,4 +52,10 @@ public class Elevator implements Subsystem {
         SmartDashboard.putNumber("rightElevatorPosition", _rightTalon.getSelectedSensorPosition());
     }
 
+    @Override
+    public void ResetSensors() {
+        _leftTalon.setSelectedSensorPosition(0);
+        _rightTalon.setSelectedSensorPosition(0);
+    }
+
 }

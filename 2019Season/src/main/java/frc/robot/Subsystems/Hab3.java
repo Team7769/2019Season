@@ -9,4 +9,9 @@ public class Hab3 implements Subsystem{
     public void WriteToDashboard() {
         //Write some data
     }
+
+	@Override
+	public void ResetSensors() {
+		
+	}
 }
