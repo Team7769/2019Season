@@ -70,12 +70,37 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     teleopDrive();
+    teleopElevator();
+    teleopArm();
+    teleopCollector();
   }
   public void teleopDrive(){
     _driveTrain.curvatureDrive(_driverController.getY(Hand.kLeft), _driverController.getX(Hand.kRight), getQuickTurn());
   }
   public boolean getQuickTurn() {
     return _driverController.getAButton();
+  }
+  public void teleopElevator(){
+    if (Math.abs(_operatorController.getY(Hand.kLeft)) > .05)
+    {
+      _elevator.setSpeed(_operatorController.getY(Hand.kLeft));
+    }
+  }
+  public void teleopArm(){
+    if (Math.abs(_operatorController.getX(Hand.kRight)) > .05)
+    {
+      _arm.setSpeed(_operatorController.getX(Hand.kRight));
+    }
+  }
+  public void teleopCollector(){
+    if (_operatorController.getAButton()){
+      _collector.setSpeed(1.0);
+    } else if (_operatorController.getXButton())
+    {
+      _collector.setSpeed(-1.0);
+    } else {
+      _collector.setSpeed(0.0);
+    }
   }
 
   @Override
