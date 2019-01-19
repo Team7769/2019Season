@@ -28,4 +28,9 @@ public class Arm implements Subsystem{
         SmartDashboard.putNumber("rightArmPosition", _rightTalon.getSelectedSensorPosition());
     }
 
+	public void ResetSensors() {
+        _leftTalon.setSelectedSensorPosition(0);
+        _rightTalon.setSelectedSensorPosition(0);
+	}
+
 }
