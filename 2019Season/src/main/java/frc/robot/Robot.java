@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import frc.robot.Configuration.Constants;
 import frc.robot.Subsystems.DriveTrain;
+import frc.robot.Subsystems.Hab3;
 import frc.robot.Utilities.RobotControllerMap;
 import frc.robot.Utilities.RobotMap;
 
@@ -29,6 +30,7 @@ public class Robot extends TimedRobot {
   private RobotControllerMap _robotControllers;
   private RobotMap _robotMap;
   private DriveTrain _driveTrain;
+  private Hab3 _hab3;
   private XboxController _driverController;
   private XboxController _operatorController;
 
@@ -40,6 +42,8 @@ public class Robot extends TimedRobot {
     _driveTrain = new DriveTrain(_robotMap.getLeftDriveSpark(), _robotMap.getRightDriveSpark());
     _driverController = _robotControllers.getDriverController();
     _operatorController = _robotControllers.getOperatorController();
+
+    _hab3 = new Hab3();
   }
 
   @Override
