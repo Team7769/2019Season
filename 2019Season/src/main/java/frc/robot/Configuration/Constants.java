@@ -26,5 +26,7 @@ public final class Constants {
     public static final double kElevatorMidHatch = 2;
     public static final double kElevatorMidCargo = 3;
     public static final double kElevatorTopCargo = 4;
+
+    public static final boolean kIsTestRobot = true;
         
 }
