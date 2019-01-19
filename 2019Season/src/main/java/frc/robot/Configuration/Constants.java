@@ -19,5 +19,12 @@ public final class Constants {
     //Controller Usb Slots
     public static final int kDriverControllerSlot = 0;
     public static final int kOperatorControllerSlot = 0;
+
+    //Elevator Setpoints
+    public static final double kElevatorLowHatch = 0;
+    public static final double kElevatorLowCargo = 1;
+    public static final double kElevatorMidHatch = 2;
+    public static final double kElevatorMidCargo = 3;
+    public static final double kElevatorTopCargo = 4;
         
 }
