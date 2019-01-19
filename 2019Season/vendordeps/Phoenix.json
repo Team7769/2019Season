@@ -19,20 +19,7 @@
             "version": "5.12.1"
         }
     ],
-    "jniDependencies": [
-        {
-            "groupId": "com.ctre.phoenix",
-            "artifactId": "cci",
-            "version": "5.12.1",
-            "isJar": false,
-            "skipInvalidPlatforms": true,
-            "validPlatforms": [
-                "linuxathena",
-                "windowsx86-64",
-                "linuxx86-64"
-            ]
-        }
-    ],
+    "jniDependencies": [],
     "cppDependencies": [
         {
             "groupId": "com.ctre.phoenix",
