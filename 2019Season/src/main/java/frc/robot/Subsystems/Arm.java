@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Configuration.Constants;
 
 public class Arm implements Subsystem{
     private TalonSRX _leftTalon;
@@ -19,6 +20,25 @@ public class Arm implements Subsystem{
     public void setSpeed(double speed) {
         _leftTalon.set(ControlMode.PercentOutput, speed);
         _rightTalon.set(ControlMode.PercentOutput, speed);
+    }
+    public void setPosition(double position) {
+        _leftTalon.set(ControlMode.Position, position);
+        _rightTalon.set(ControlMode.Position, position);
+    }
+    public void setPositionLowHatch(){
+        setPosition(Constants.kArmLowHatch);
+    }
+    public void setPositionLowCargo(){
+        setPosition(Constants.kArmLowCargo);
+    }
+    public void setPositionMidHatch(){
+        setPosition(Constants.kArmMidHatch);
+    }
+    public void setPositionMidCargo(){
+        setPosition(Constants.kArmMidCargo);
+    }
+    public void setPositionTopCargo(){
+        setPosition(Constants.kArmTopCargo);
     }
 
     public void WriteToDashboard() {
