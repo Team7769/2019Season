@@ -18,18 +18,27 @@ public class DriveTrain implements Subsystem {
     private CANPIDController _rightSparkPID;
 
     public DriveTrain(CANSparkMax leftMotor, CANSparkMax rightMotor){
-        _robotDrive = new DifferentialDrive(leftMotor, rightMotor);
-        _leftSpark = leftMotor;
-        _rightSpark = rightMotor;
+        try {
+            _robotDrive = new DifferentialDrive(leftMotor, rightMotor);
+            _leftSpark = leftMotor;
+            _rightSpark = rightMotor;
+        } catch (Exception ex){
+            ex.printStackTrace();
+        }
 
-        _leftEncoder = _leftSpark.getEncoder();
-        _rightEncoder = _rightSpark.getEncoder();
-        _leftSparkPID = _rightSpark.getPIDController();
-        _rightSparkPID = _rightSpark.getPIDController();
+        try {
+            _leftEncoder = _leftSpark.getEncoder();
+            _rightEncoder = _rightSpark.getEncoder();
+            _leftSparkPID = _leftSpark.getPIDController();
+            _rightSparkPID = _rightSpark.getPIDController();
+        } catch (Exception ex){
+            ex.printStackTrace();
+        }
     }
 
     public void curvatureDrive(double speed, double rotation, boolean isQuickTurn) {
-        _robotDrive.curvatureDrive(speed, rotation, isQuickTurn);
+        double dampen = 0.6;
+        _robotDrive.curvatureDrive(-speed * dampen, rotation * dampen, isQuickTurn);
     }
     public void arcadeDrive(double speed, double rotation){
         _robotDrive.arcadeDrive(speed, rotation);
@@ -50,6 +59,8 @@ public class DriveTrain implements Subsystem {
         SmartDashboard.putNumber("rightSparkI", _rightSparkPID.getI());
         SmartDashboard.putNumber("rightSparkD", _rightSparkPID.getD());
         SmartDashboard.putNumber("rightSparkFF", _rightSparkPID.getFF());
+        SmartDashboard.putNumber("rightDriveOutput", _rightSpark.get());
+        SmartDashboard.putNumber("leftDriveOutput", _leftSpark.get());
     }
 
     @Override

@@ -48,12 +48,16 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     _robotControllers = new RobotControllerMap(Constants.kDriverControllerSlot, Constants.kOperatorControllerSlot);
-    _robotMap = new RobotMap();
-
-    _driveTrain = new DriveTrain(_robotMap.getLeftDriveSpark(), _robotMap.getRightDriveSpark());
+    _subsystems = new ArrayList<Subsystem>();
+    try {
+      _robotMap = new RobotMap();
+      _driveTrain = new DriveTrain(_robotMap.getLeftDriveSpark(), _robotMap.getRightDriveSpark());
+      _subsystems.add(_driveTrain);
+    } catch (Exception ex){
+      ex.printStackTrace();
+    }
     _driverController = _robotControllers.getDriverController();
     _operatorController = _robotControllers.getOperatorController();
-    _subsystems.add(_driveTrain);
 
     if (!Constants.kIsTestRobot){
       _hab3 = new Hab3();
@@ -95,7 +99,7 @@ public class Robot extends TimedRobot {
     _driveTrain.curvatureDrive(_driverController.getY(Hand.kLeft), _driverController.getX(Hand.kRight), getQuickTurn());
   }
   public boolean getQuickTurn() {
-    return _driverController.getAButton();
+    return _driverController.getBumper(Hand.kRight);
   }
   public void teleopElevator(){
     if (Math.abs(_operatorController.getY(Hand.kLeft)) > .05)
