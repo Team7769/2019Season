@@ -26,21 +26,21 @@ public class RobotMap {
     public RobotMap(){
         _lfDrive = new CANSparkMax(Constants.kLFDriveId, MotorType.kBrushless);
         
-        _lmDrive = new CANSparkMax(Constants.kLMDriveId, MotorType.kBrushless);
-        _lmDrive.follow(_lfDrive);
-
         _lrDrive = new CANSparkMax(Constants.kLRDriveId, MotorType.kBrushless);
         _lrDrive.follow(_lfDrive);
 
         _rfDrive = new CANSparkMax(Constants.kRFDriveId, MotorType.kBrushless);
 
-        _rmDrive = new CANSparkMax(Constants.kRMDriveId, MotorType.kBrushless);
-        _rmDrive.follow(_rfDrive);
-
         _rrDrive = new CANSparkMax(Constants.kRRDriveId, MotorType.kBrushless);
         _rrDrive.follow(_rfDrive);
 
         if (!Constants.kIsTestRobot){
+            _lmDrive = new CANSparkMax(Constants.kLMDriveId, MotorType.kBrushless);
+            _lmDrive.follow(_lfDrive);
+            
+            _rmDrive = new CANSparkMax(Constants.kRMDriveId, MotorType.kBrushless);
+            _rmDrive.follow(_rfDrive);
+
             _leftArm = new TalonSRX(Constants.kLArmId);
             _rightArm = new TalonSRX(Constants.kRArmId);
             _leftElevator = new TalonSRX(Constants.kLElevatorId);
