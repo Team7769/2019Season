@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Configuration.Constants;
 
 public class Collector implements Subsystem {
 
@@ -18,7 +19,12 @@ public class Collector implements Subsystem {
         _topCollector.set(ControlMode.PercentOutput, speed);
         _bottomCollector.set(ControlMode.PercentOutput, speed);
     }
-
+    public void intake(){
+        setSpeed(Constants.kCollectorIntakeSpeed);
+    }
+    public void release(){
+        setSpeed(Constants.kCollectorReleaseSpeed);
+    }
     @Override
     public void WriteToDashboard() {
         SmartDashboard.putNumber("topCollectorSpeed", _topCollector.getSelectedSensorVelocity());

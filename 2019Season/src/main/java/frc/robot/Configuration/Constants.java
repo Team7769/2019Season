@@ -27,11 +27,16 @@ public final class Constants {
     public static final double kElevatorMidCargo = 3;
     public static final double kElevatorTopCargo = 4;
 
+    //Arm Setpoints
     public static final double kArmLowHatch = 0;
     public static final double kArmLowCargo = 1;
     public static final double kArmMidHatch = 2;
     public static final double kArmMidCargo = 3;
     public static final double kArmTopCargo = 4;
+
+    //Collector speed
+    public static final double kCollectorIntakeSpeed = 0.5;
+    public static final double kCollectorReleaseSpeed = -0.5;
 
     public static final boolean kIsTestRobot = true;
         
