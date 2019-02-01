@@ -24,23 +24,27 @@ public class RobotMap {
     private TalonSRX _bottomCollector;
 
     public RobotMap(){
-        _lfDrive = new CANSparkMax(Constants.kLFDriveId, MotorType.kBrushless);
-        
-        _lmDrive = new CANSparkMax(Constants.kLMDriveId, MotorType.kBrushless);
-        _lmDrive.follow(_lfDrive);
+        try {
+            _lfDrive = new CANSparkMax(Constants.kLFDriveId, MotorType.kBrushless);
+            
+            _lrDrive = new CANSparkMax(Constants.kLRDriveId, MotorType.kBrushless);
+            _lrDrive.follow(_lfDrive);
 
-        _lrDrive = new CANSparkMax(Constants.kLRDriveId, MotorType.kBrushless);
-        _lrDrive.follow(_lfDrive);
-
-        _rfDrive = new CANSparkMax(Constants.kRFDriveId, MotorType.kBrushless);
-
-        _rmDrive = new CANSparkMax(Constants.kRMDriveId, MotorType.kBrushless);
-        _rmDrive.follow(_rfDrive);
-
-        _rrDrive = new CANSparkMax(Constants.kRRDriveId, MotorType.kBrushless);
-        _rrDrive.follow(_rfDrive);
+            _rfDrive = new CANSparkMax(Constants.kRFDriveId, MotorType.kBrushless);
+            
+            _rrDrive = new CANSparkMax(Constants.kRRDriveId, MotorType.kBrushless);
+            _rrDrive.follow(_rfDrive);
+        } catch (Exception ex){
+            ex.printStackTrace();
+        }
 
         if (!Constants.kIsTestRobot){
+            _lmDrive = new CANSparkMax(Constants.kLMDriveId, MotorType.kBrushless);
+            _lmDrive.follow(_lfDrive);
+            
+            _rmDrive = new CANSparkMax(Constants.kRMDriveId, MotorType.kBrushless);
+            _rmDrive.follow(_rfDrive);
+
             _leftArm = new TalonSRX(Constants.kLArmId);
             _rightArm = new TalonSRX(Constants.kRArmId);
             _leftElevator = new TalonSRX(Constants.kLElevatorId);
@@ -48,6 +52,8 @@ public class RobotMap {
             _topCollector = new TalonSRX(Constants.kTCollectorId);
             _bottomCollector = new TalonSRX(Constants.kBCollectorId);
         }
+        
+        System.out.println("Created Robot Map");
         
     }
     public CANSparkMax getLeftDriveSpark(){
