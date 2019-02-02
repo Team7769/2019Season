@@ -31,7 +31,6 @@ public class RobotMap {
             _lrDrive.follow(_lfDrive);
 
             _rfDrive = new CANSparkMax(Constants.kRFDriveId, MotorType.kBrushless);
-            
             _rrDrive = new CANSparkMax(Constants.kRRDriveId, MotorType.kBrushless);
             _rrDrive.follow(_rfDrive);
         } catch (Exception ex){

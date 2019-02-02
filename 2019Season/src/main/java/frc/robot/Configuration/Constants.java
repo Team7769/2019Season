@@ -38,6 +38,14 @@ public final class Constants {
     public static final double kCollectorIntakeSpeed = 0.5;
     public static final double kCollectorReleaseSpeed = -0.5;
 
+    //PID Coefficients
+    public static final double kDistancePIDP = 0.01;
+    public static final double kDistancePIDI = 0.0001;
+    public static final double kDistancePIDD = 0.75;
+    public static final double kVelocityPIDP = 0.00025;
+    public static final double kVelocityPIDI = 0.0;
+    public static final double kVelocityPIDD = 0.0;
+
     public static final boolean kIsTestRobot = true;
         
 }

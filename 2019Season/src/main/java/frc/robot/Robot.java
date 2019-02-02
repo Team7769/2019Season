@@ -44,6 +44,8 @@ public class Robot extends TimedRobot {
   private XboxController _operatorController;
 
   private ArrayList<Subsystem> _subsystems;
+  private int _timer;
+  private int _autonomousCase;
 
   @Override
   public void robotInit() {
@@ -58,6 +60,8 @@ public class Robot extends TimedRobot {
     }
     _driverController = _robotControllers.getDriverController();
     _operatorController = _robotControllers.getOperatorController();
+    _timer = 0;
+    _autonomousCase = 0;
 
     if (!Constants.kIsTestRobot){
       _hab3 = new Hab3();
@@ -74,11 +78,62 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+    _autonomousCase = 0;
     _subsystems.forEach((s) -> s.ResetSensors());
   }
 
   @Override
   public void autonomousPeriodic() {
+    switch (1) {
+      case 0:
+        basicDriveAuto();
+        break;
+      case 1:
+        basicProfileAuto();
+        break;
+      default:
+        break;
+    }
+    
+    System.out.println("Case: " + _autonomousCase);
+        
+    _timer++;
+  }
+  public void basicDriveAuto(){
+    switch (_autonomousCase){
+      case 0:
+        _driveTrain.setTargetDistance(100);
+        _autonomousCase++;
+        break;
+      case 1:
+        _driveTrain.driveDistance();
+        if (_driveTrain.isDistanceOnTarget()){
+          _driveTrain.stop();
+          _autonomousCase++;
+        }
+        break;
+      default:
+        _driveTrain.stop();
+        break;
+    }
+  }
+  public void basicProfileAuto(){
+    switch (_autonomousCase){
+      case 0:
+        _driveTrain.setTargetProfile(100);
+        _autonomousCase++;
+        break;
+      case 1:
+        _driveTrain.followProfile();
+        if (_driveTrain.isDistanceOnTarget()){
+          _driveTrain.stop();
+          _autonomousCase++;
+        }
+        break;
+      default:
+        _driveTrain.stop();
+        break;
+    }
   }
 
   @Override
