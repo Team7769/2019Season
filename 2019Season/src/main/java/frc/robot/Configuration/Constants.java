@@ -15,6 +15,8 @@ public final class Constants {
     public static final int kRElevatorId = 9;
     public static final int kTCollectorId = 10;
     public static final int kBCollectorId = 11;
+    public static final int kLeftCollectorSolenoidSlot = 0;
+    public static final int kRightCollectorSolenoidSlot = 1;
 
     //Controller Usb Slots
     public static final int kDriverControllerSlot = 0;
