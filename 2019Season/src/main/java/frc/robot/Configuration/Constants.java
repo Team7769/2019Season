@@ -45,10 +45,11 @@ public final class Constants {
     public static final double kVelocityPIDP = 0.00025;
     public static final double kVelocityPIDI = 0.0;
     public static final double kVelocityPIDD = 0.0;
+    public static final double kVelocityPIDFF = 0.0;
 
     public static final double kDriveWheelDiameter = 6.0;
-    public static final double kDriveVelocityConversion = Math.PI / 60.00; //Rev/Min -> Ft/sec
-    public static final double kDrivePositionConversion = 100/162; 
+    public static final double kDriveVelocityConversion = Math.PI / 107.1; //Rev/Min -> Ft/sec
+    public static final double kDrivePositionConversion = 6 * Math.PI / 10.71; 
 
     public static final boolean kIsTestRobot = true;
         

@@ -42,11 +42,11 @@ public class DriveTrain implements Subsystem {
         try {
             _leftEncoder = _leftSpark.getEncoder();
             _leftEncoder.setPositionConversionFactor(Constants.kDrivePositionConversion);
-            //_leftEncoder.setVelocityConversionFactor(Constants.kDriveVelocityConversion);
+            _leftEncoder.setVelocityConversionFactor(Constants.kDriveVelocityConversion);
 
             _rightEncoder = _rightSpark.getEncoder();
             _rightEncoder.setPositionConversionFactor(Constants.kDrivePositionConversion);
-            //_rightEncoder.setVelocityConversionFactor(Constants.kDriveVelocityConversion);
+            _rightEncoder.setVelocityConversionFactor(Constants.kDriveVelocityConversion);
 
             _leftSparkPID = _leftSpark.getPIDController();
             _rightSparkPID = _rightSpark.getPIDController();
@@ -65,7 +65,7 @@ public class DriveTrain implements Subsystem {
         _profile = null;
         _timer = new Timer();
     }
-    public void setSmartMotionParameters(double maxVelocity, double maxAcceleration){
+    public void setSmartMotionParameters(double maxVelocity, double maxAcceleration, double targetDistance){
 
         _leftSparkPID.setSmartMotionMaxAccel(maxAcceleration, 0);
         _leftSparkPID.setSmartMotionMaxVelocity(maxVelocity, 0);
@@ -74,23 +74,31 @@ public class DriveTrain implements Subsystem {
         _rightSparkPID.setSmartMotionMaxAccel(maxAcceleration, 0);
         _rightSparkPID.setSmartMotionMaxVelocity(maxVelocity, 0);
         _rightSparkPID.setSmartMotionMinOutputVelocity(0, 0);
+        
+        _targetDistanceLeft = targetDistance;
+        _targetDistanceRight = -targetDistance;
     }
     public void updatePIDFromDashboard() {
-        _leftSparkPID.setP(SmartDashboard.getNumber("leftSparkP", Constants.kVelocityPIDP));
-        _leftSparkPID.setI(SmartDashboard.getNumber("leftSparkI", Constants.kVelocityPIDI));
-        _leftSparkPID.setD(SmartDashboard.getNumber("leftSparkD", Constants.kVelocityPIDD));
-        _leftSparkPID.setFF(SmartDashboard.getNumber("leftSparkFF", 0.0));
+        //_leftSparkPID.setP(SmartDashboard.getNumber("leftSparkP", Constants.kVelocityPIDP));
+        //_leftSparkPID.setI(SmartDashboard.getNumber("leftSparkI", Constants.kVelocityPIDI));
+        //_leftSparkPID.setD(SmartDashboard.getNumber("leftSparkD", Constants.kVelocityPIDD));
+        //_leftSparkPID.setFF(SmartDashboard.getNumber("leftSparkFF", Constants.kVelocityPIDFF));
 
-        _rightSparkPID.setP(SmartDashboard.getNumber("leftSparkP", Constants.kVelocityPIDP));
-        _rightSparkPID.setI(SmartDashboard.getNumber("leftSparkI", Constants.kVelocityPIDI));
-        _rightSparkPID.setD(SmartDashboard.getNumber("leftSparkD", Constants.kVelocityPIDD));
-        _rightSparkPID.setFF(SmartDashboard.getNumber("leftSparkFF", 0.0));
+        //_rightSparkPID.setP(SmartDashboard.getNumber("leftSparkP", Constants.kVelocityPIDP));
+        //_rightSparkPID.setI(SmartDashboard.getNumber("leftSparkI", Constants.kVelocityPIDI));
+        //_rightSparkPID.setD(SmartDashboard.getNumber("leftSparkD", Constants.kVelocityPIDD));
+        //_rightSparkPID.setFF(SmartDashboard.getNumber("leftSparkFF", Constants.kVelocityPIDFF));
     }
-    public void driveDistanceSmartMotion(double distance){
-        _targetDistanceLeft = distance;
-        _targetDistanceRight = distance;
-        _leftSparkPID.setReference(distance, ControlType.kSmartMotion);
-        _rightSparkPID.setReference(-distance, ControlType.kSmartMotion);
+    public void driveDistanceSmartMotion(){
+        if (_targetDistanceLeft < 0){
+            _leftSparkPID.setOutputRange(-1.0, 0);
+            _rightSparkPID.setOutputRange(0, 1.0);
+        } else {
+            _leftSparkPID.setOutputRange(0, 1.0);
+            _rightSparkPID.setOutputRange(-1.0, 0);
+        }
+        _leftSparkPID.setReference(_targetDistanceLeft, ControlType.kSmartMotion);
+        _rightSparkPID.setReference(_targetDistanceRight, ControlType.kSmartMotion);
     }
     public void setTargetDistance(double distance){
         setDistancePIDValues();
@@ -108,9 +116,11 @@ public class DriveTrain implements Subsystem {
         _leftSparkPID.setP(Constants.kVelocityPIDP);
         _leftSparkPID.setI(Constants.kVelocityPIDI);
         _leftSparkPID.setD(Constants.kVelocityPIDD);
+        _leftSparkPID.setFF(Constants.kVelocityPIDFF);
         _rightSparkPID.setP(Constants.kVelocityPIDP);
         _rightSparkPID.setI(Constants.kVelocityPIDI);
         _rightSparkPID.setD(Constants.kVelocityPIDD);
+        _rightSparkPID.setFF(Constants.kVelocityPIDFF);
         
         _leftSparkPID.setOutputRange(0, 1.0);
         _rightSparkPID.setOutputRange(-1.0, 0);
@@ -199,6 +209,8 @@ public class DriveTrain implements Subsystem {
     public void ResetSensors() {
         _leftEncoder.setPosition(0);
         _rightEncoder.setPosition(0);
+        _targetDistanceLeft = 0;
+        _targetDistanceRight = 0;
     }
     
 
