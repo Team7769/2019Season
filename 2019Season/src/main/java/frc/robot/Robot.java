@@ -212,7 +212,6 @@ public class Robot extends TimedRobot {
 
     if (!Constants.kIsTestRobot){
       teleopElevator();
-      teleopArm();
       teleopCollector();
     }
   }
@@ -223,16 +222,33 @@ public class Robot extends TimedRobot {
     return _driverController.getBumper(Hand.kRight);
   }
   public void teleopElevator(){
-    if (Math.abs(_operatorController.getY(Hand.kLeft)) > .05)
+    if (Math.abs(_operatorController.getY(Hand.kLeft)) > .05
+        || Math.abs(_operatorController.getX(Hand.kRight)) > .05)
     {
-      _elevator.setSpeed(_operatorController.getY(Hand.kLeft));
+      manualArm(_operatorController.getX(Hand.kRight));
+      manualElevator(_operatorController.getY(Hand.kLeft));
+    } else if (_operatorController.getAButton()){
+      _elevator.setPositionLowHatch();
+      _arm.setPositionLowHatch();
+    } else if (_operatorController.getBButton()){
+      _elevator.setPositionMidHatch();
+      _arm.setPositionMidHatch();
+    } else if (_operatorController.getXButton()){
+      _elevator.setPositionLowCargo();
+      _arm.setPositionLowCargo();
+    } else if (_operatorController.getYButton()){
+      _elevator.setPositionMidCargo();
+      _arm.setPositionMidCargo();
+    } else if (_operatorController.getBumper(Hand.kRight)){
+      _elevator.setPositionTopCargo();
+      _arm.setPositionTopCargo();
     }
   }
-  public void teleopArm(){
-    if (Math.abs(_operatorController.getX(Hand.kRight)) > .05)
-    {
-      _arm.setSpeed(_operatorController.getX(Hand.kRight));
-    }
+  public void manualElevator(double value){
+    _elevator.setSpeed(value);
+  }
+  public void manualArm(double value){
+    _arm.setSpeed(value);
   }
   public void teleopCollector(){
     if (Math.abs(_operatorController.getTriggerAxis(Hand.kLeft)) > .05){

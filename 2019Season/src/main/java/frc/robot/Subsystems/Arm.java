@@ -1,6 +1,7 @@
 package frc.robot.Subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -12,11 +13,20 @@ public class Arm implements Subsystem{
 
     public Arm(TalonSRX leftMotor, TalonSRX rightMotor){
         _leftTalon = leftMotor;
+        _leftTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
 
         _rightTalon = rightMotor;
         _rightTalon.setInverted(true);
-    }
+        _rightTalon.follow(_leftTalon);
 
+        setPositionPIDValues();
+    }
+    public void setPositionPIDValues(){
+        _leftTalon.config_kP(0, Constants.kArmP);
+        _leftTalon.config_kI(0, Constants.kArmI);
+        _leftTalon.config_kD(0, Constants.kArmD);
+        _leftTalon.config_kF(0, Constants.kArmFF);        
+    }
     public void setSpeed(double speed) {
         _leftTalon.set(ControlMode.PercentOutput, speed);
         _rightTalon.set(ControlMode.PercentOutput, speed);

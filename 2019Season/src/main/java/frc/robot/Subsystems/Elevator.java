@@ -19,6 +19,22 @@ public class Elevator implements Subsystem {
 
         _rightTalon = rightTalon;
         _rightTalon.setInverted(true);
+        _rightTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+        _rightTalon.setSelectedSensorPosition(0);
+
+        setPositionPIDValues();
+    }
+    public void setPositionPIDValues(){
+        _leftTalon.config_kP(0, Constants.kElevatorP);
+        _leftTalon.config_kI(0, Constants.kElevatorI);
+        _leftTalon.config_kD(0, Constants.kElevatorD);
+        _leftTalon.config_kF(0, Constants.kElevatorFF);
+        
+        _rightTalon.config_kP(0, Constants.kElevatorP);
+        _rightTalon.config_kI(0, Constants.kElevatorI);
+        _rightTalon.config_kD(0, Constants.kElevatorD);
+        _rightTalon.config_kF(0, Constants.kElevatorFF);
+        
     }
     public void setSpeed(double speed) {
         _leftTalon.set(ControlMode.PercentOutput, speed);
