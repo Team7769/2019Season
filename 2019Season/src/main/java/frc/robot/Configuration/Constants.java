@@ -46,6 +46,18 @@ public final class Constants {
     public static final double kVelocityPIDI = 0.0;
     public static final double kVelocityPIDD = 0.0;
     public static final double kVelocityPIDFF = 0.0;
+    
+    //Elevator
+    public static final double kElevatorP = 0.00025;
+    public static final double kElevatorI = 0.0;
+    public static final double kElevatorD = 0.0;
+    public static final double kElevatorFF = 0.0;
+
+    //Arm
+    public static final double kArmP = 0.00025;
+    public static final double kArmI = 0.0;
+    public static final double kArmD = 0.0;
+    public static final double kArmFF = 0.0;
 
     public static final double kDriveWheelDiameter = 6.0;
     public static final double kDriveVelocityConversion = Math.PI / 107.1; //Rev/Min -> Ft/sec
