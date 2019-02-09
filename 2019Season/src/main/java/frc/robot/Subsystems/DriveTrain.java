@@ -4,6 +4,7 @@ import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
+import com.revrobotics.CANPIDController.AccelStrategy;
 
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Timer;
@@ -40,19 +41,19 @@ public class DriveTrain implements Subsystem {
 
         try {
             _leftEncoder = _leftSpark.getEncoder();
+            _leftEncoder.setPositionConversionFactor(Constants.kDrivePositionConversion);
+            //_leftEncoder.setVelocityConversionFactor(Constants.kDriveVelocityConversion);
+
             _rightEncoder = _rightSpark.getEncoder();
+            _rightEncoder.setPositionConversionFactor(Constants.kDrivePositionConversion);
+            //_rightEncoder.setVelocityConversionFactor(Constants.kDriveVelocityConversion);
+
             _leftSparkPID = _leftSpark.getPIDController();
             _rightSparkPID = _rightSpark.getPIDController();
-            
+
             //_leftSparkPID.setOutputRange(-0.75, 0.75);
             //_rightSparkPID.setOutputRange(-0.75, 0.75);
-
-            _leftSparkPID.setP(Constants.kDistancePIDP);
-            _rightSparkPID.setP(Constants.kDistancePIDP);
-            _leftSparkPID.setI(Constants.kDistancePIDI);
-            _rightSparkPID.setI(Constants.kDistancePIDI);
-            _leftSparkPID.setD(Constants.kDistancePIDD);
-            _rightSparkPID.setD(Constants.kDistancePIDD);
+            setVelocityPIDValues();
 
         } catch (Exception ex){
             ex.printStackTrace();
@@ -60,18 +61,45 @@ public class DriveTrain implements Subsystem {
         _pidEnabled = false;
         _targetDistanceLeft = 0;
         _targetDistanceRight = 0;
-        _tolerance = 2.0;
+        _tolerance = 8;
         _profile = null;
         _timer = new Timer();
     }
+    public void setSmartMotionParameters(double maxVelocity, double maxAcceleration){
+
+        _leftSparkPID.setSmartMotionMaxAccel(maxAcceleration, 0);
+        _leftSparkPID.setSmartMotionMaxVelocity(maxVelocity, 0);
+        _leftSparkPID.setSmartMotionMinOutputVelocity(0, 0);
+
+        _rightSparkPID.setSmartMotionMaxAccel(maxAcceleration, 0);
+        _rightSparkPID.setSmartMotionMaxVelocity(maxVelocity, 0);
+        _rightSparkPID.setSmartMotionMinOutputVelocity(0, 0);
+    }
+    public void updatePIDFromDashboard() {
+        _leftSparkPID.setP(SmartDashboard.getNumber("leftSparkP", Constants.kVelocityPIDP));
+        _leftSparkPID.setI(SmartDashboard.getNumber("leftSparkI", Constants.kVelocityPIDI));
+        _leftSparkPID.setD(SmartDashboard.getNumber("leftSparkD", Constants.kVelocityPIDD));
+        _leftSparkPID.setFF(SmartDashboard.getNumber("leftSparkFF", 0.0));
+
+        _rightSparkPID.setP(SmartDashboard.getNumber("leftSparkP", Constants.kVelocityPIDP));
+        _rightSparkPID.setI(SmartDashboard.getNumber("leftSparkI", Constants.kVelocityPIDI));
+        _rightSparkPID.setD(SmartDashboard.getNumber("leftSparkD", Constants.kVelocityPIDD));
+        _rightSparkPID.setFF(SmartDashboard.getNumber("leftSparkFF", 0.0));
+    }
+    public void driveDistanceSmartMotion(double distance){
+        _targetDistanceLeft = distance;
+        _targetDistanceRight = distance;
+        _leftSparkPID.setReference(distance, ControlType.kSmartMotion);
+        _rightSparkPID.setReference(-distance, ControlType.kSmartMotion);
+    }
     public void setTargetDistance(double distance){
         setDistancePIDValues();
-        _targetDistanceLeft = _leftEncoder.getPosition() + distance;
-        _targetDistanceRight = _rightEncoder.getPosition() + distance;
+        _targetDistanceLeft = distance;
+        _targetDistanceRight = distance;
     }
     public void setTargetProfile(double distance) {
-        _profile = new TrapezoidalMotionProfile(distance - _leftEncoder.getPosition(), 4300, 3000);
-        _targetDistanceLeft = distance + _leftEncoder.getPosition();
+        _profile = new TrapezoidalMotionProfile(distance, 50, 40);
+        _targetDistanceLeft = distance;
         setVelocityPIDValues();
         _timer.reset();
         _timer.start();
@@ -84,8 +112,8 @@ public class DriveTrain implements Subsystem {
         _rightSparkPID.setI(Constants.kVelocityPIDI);
         _rightSparkPID.setD(Constants.kVelocityPIDD);
         
-        _leftSparkPID.setOutputRange(0.0, 0.75);
-        _rightSparkPID.setOutputRange(-0.75, 0);
+        _leftSparkPID.setOutputRange(0, 1.0);
+        _rightSparkPID.setOutputRange(-1.0, 0);
 
     }
     private void setDistancePIDValues(){
@@ -105,11 +133,13 @@ public class DriveTrain implements Subsystem {
     public void followProfile(){
         ProfilePoint target = _profile.getAtTime(_timer.get());
         SmartDashboard.putNumber("profileTarget", target.vel);
-        _leftSparkPID.setReference(-target.vel, ControlType.kVelocity);
-        _rightSparkPID.setReference(target.vel, ControlType.kVelocity);
+        SmartDashboard.putNumber("timer", _timer.get());
+        SmartDashboard.putNumber("positionTarget", _targetDistanceLeft);
+        _leftSparkPID.setReference(target.vel * 100, ControlType.kVelocity);
+        _rightSparkPID.setReference(-target.vel * 100, ControlType.kVelocity);
 
-        //_leftSparkPID.setReference(2000, ControlType.kVelocity);
-        //_rightSparkPID.setReference(-2000, ControlType.kVelocity);
+        //_leftSparkPID.setReference(4300, ControlType.kVelocity);
+        //_rightSparkPID.setReference(-4300, ControlType.kVelocity);
     }
     public void driveDistance() {
         _leftSparkPID.setReference(_targetDistanceLeft, ControlType.kPosition);
@@ -124,6 +154,12 @@ public class DriveTrain implements Subsystem {
     public boolean isDistanceOnTarget() {
         double currentDistance = _leftEncoder.getPosition();
         if ((Math.abs(_targetDistanceLeft) - Math.abs(currentDistance)) < _tolerance){
+            return true;
+        }
+        return false;
+    }
+    public boolean isProfileOnTarget(){
+        if (_profile.getAtTime(_timer.get()).vel == 0){
             return true;
         }
         return false;
@@ -154,11 +190,15 @@ public class DriveTrain implements Subsystem {
         SmartDashboard.putNumber("rightSparkFF", _rightSparkPID.getFF());
         SmartDashboard.putNumber("rightDriveOutput", _rightSpark.get());
         SmartDashboard.putNumber("leftDriveOutput", _leftSpark.get());
+        if (Constants.kIsTestRobot){
+            updatePIDFromDashboard();
+        }
     }
 
     @Override
     public void ResetSensors() {
-        //Do nothing
+        _leftEncoder.setPosition(0);
+        _rightEncoder.setPosition(0);
     }
     
 

@@ -84,12 +84,15 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
-    switch (1) {
+    switch (2) {
       case 0:
         basicDriveAuto();
         break;
       case 1:
         basicProfileAuto();
+        break;
+      case 2:
+        basicSmartMotionAuto();
         break;
       default:
         break;
@@ -125,6 +128,24 @@ public class Robot extends TimedRobot {
         break;
       case 1:
         _driveTrain.followProfile();
+        if (_driveTrain.isProfileOnTarget()){
+          _driveTrain.stop();
+          _autonomousCase++;
+        }
+        break;
+      default:
+        _driveTrain.stop();
+        break;
+    }
+  }
+  public void basicSmartMotionAuto(){
+    switch (_autonomousCase){
+      case 0:
+        _driveTrain.setSmartMotionParameters(4000, 25000);
+        _autonomousCase++;
+        break;
+      case 1:
+        _driveTrain.driveDistanceSmartMotion(100);
         if (_driveTrain.isDistanceOnTarget()){
           _driveTrain.stop();
           _autonomousCase++;
