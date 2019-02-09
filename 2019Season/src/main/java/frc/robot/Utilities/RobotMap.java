@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.Solenoid;
 import frc.robot.Configuration.*;
 
 public class RobotMap {
@@ -22,6 +23,8 @@ public class RobotMap {
     private TalonSRX _rightElevator;
     private TalonSRX _topCollector;
     private TalonSRX _bottomCollector;
+    private Solenoid _leftCollectorSolenoid;
+    private Solenoid _rightCollectorSolenoid;
 
     public RobotMap(){
         try {
@@ -50,6 +53,8 @@ public class RobotMap {
             _rightElevator = new TalonSRX(Constants.kRElevatorId);
             _topCollector = new TalonSRX(Constants.kTCollectorId);
             _bottomCollector = new TalonSRX(Constants.kBCollectorId);
+            _leftCollectorSolenoid = new Solenoid(Constants.kLeftCollectorSolenoidSlot);
+            _rightCollectorSolenoid = new Solenoid(Constants.kRightCollectorSolenoidSlot);
         }
         
         System.out.println("Created Robot Map");
@@ -78,5 +83,11 @@ public class RobotMap {
     }
     public TalonSRX getBottomCollectorTalon(){
         return _bottomCollector;
+    }
+    public Solenoid getLeftCollectorSolenoid(){
+        return _leftCollectorSolenoid;
+    }
+    public Solenoid getRightCollectorSolenoid(){
+        return _rightCollectorSolenoid;
     }
 }

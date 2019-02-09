@@ -9,6 +9,7 @@ package frc.robot;
 
 import java.util.ArrayList;
 
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
@@ -42,6 +43,7 @@ public class Robot extends TimedRobot {
   private Collector _collector;
   private XboxController _driverController;
   private XboxController _operatorController;
+  private Compressor _compressor;
 
   private ArrayList<Subsystem> _subsystems;
   private int _timer;
@@ -69,7 +71,11 @@ public class Robot extends TimedRobot {
       _hab3 = new Hab3();
       _arm = new Arm(_robotMap.getLeftArmTalon(), _robotMap.getRightArmTalon());
       _elevator = new Elevator(_robotMap.getLeftElevatorTalon(), _robotMap.getRightElevatorTalon());
-      _collector = new Collector(_robotMap.getTopCollectorTalon(), _robotMap.getBottomCollectorTalon());
+      _collector = new Collector(_robotMap.getTopCollectorTalon(), _robotMap.getBottomCollectorTalon(), 
+                                 _robotMap.getLeftCollectorSolenoid(), _robotMap.getRightCollectorSolenoid());
+      _compressor = new Compressor();
+
+      _compressor.start();
       _subsystems.add(_collector);
       _subsystems.add(_arm);
       _subsystems.add(_elevator);
@@ -258,6 +264,12 @@ public class Robot extends TimedRobot {
       _collector.setSpeed(_operatorController.getTriggerAxis(Hand.kRight));
     } else {
       _collector.setSpeed(0.0);
+    }
+
+    if (_driverController.getAButton()){
+      _collector.grabHatch();
+    } else if (_driverController.getBButton()){
+      _collector.releaseHatch();
     }
   }
 
