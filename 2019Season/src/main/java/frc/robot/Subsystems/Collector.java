@@ -11,14 +11,12 @@ public class Collector implements Subsystem {
 
     private TalonSRX _topCollector;
     private TalonSRX _bottomCollector;
-    private Solenoid _leftSolenoid;
-    private Solenoid _rightSolenoid;
+    private Solenoid _solenoid;
 
-    public Collector(TalonSRX topCollector, TalonSRX bottomCollector, Solenoid leftSolenoid, Solenoid rightSolenoid) {
+    public Collector(TalonSRX topCollector, TalonSRX bottomCollector, Solenoid solenoid) {
         _topCollector = topCollector;
         _bottomCollector = bottomCollector;
-        _leftSolenoid = leftSolenoid;
-        _rightSolenoid = rightSolenoid;
+        _solenoid = solenoid;
     }
     public Collector(TalonSRX topCollector, TalonSRX bottomCollector) {
         _topCollector = topCollector;
@@ -35,12 +33,10 @@ public class Collector implements Subsystem {
         setSpeed(Constants.kCollectorReleaseSpeed);
     }
     public void grabHatch(){
-        _leftSolenoid.set(true);
-        _rightSolenoid.set(true);
+        _solenoid.set(true);
     }
     public void releaseHatch() {
-        _leftSolenoid.set(false);
-        _rightSolenoid.set(false);
+        _solenoid.set(false);
     }
 
     @Override
@@ -49,6 +45,7 @@ public class Collector implements Subsystem {
         SmartDashboard.putNumber("topCollectorPosition", _topCollector.getSelectedSensorPosition());
         SmartDashboard.putNumber("bottomCollectorSpeed", _bottomCollector.getSelectedSensorVelocity());
         SmartDashboard.putNumber("bottomCollectorPosition", _bottomCollector.getSelectedSensorPosition());
+        SmartDashboard.putBoolean("collectorHatchOut", _solenoid.get());
     }
 	
 	public void ResetSensors() {

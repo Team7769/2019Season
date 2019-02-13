@@ -4,9 +4,6 @@ import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
-import com.revrobotics.CANPIDController.AccelStrategy;
-
-import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -54,6 +51,15 @@ public class DriveTrain implements Subsystem {
             //_leftSparkPID.setOutputRange(-0.75, 0.75);
             //_rightSparkPID.setOutputRange(-0.75, 0.75);
             setVelocityPIDValues();
+            
+        SmartDashboard.putNumber("leftSparkP", _leftSparkPID.getP());
+        SmartDashboard.putNumber("leftSparkI", _leftSparkPID.getI());
+        SmartDashboard.putNumber("leftSparkD", _leftSparkPID.getD());
+        SmartDashboard.putNumber("leftSparkFF", _leftSparkPID.getFF());
+        SmartDashboard.putNumber("rightSparkP", _rightSparkPID.getP());
+        SmartDashboard.putNumber("rightSparkI", _rightSparkPID.getI());
+        SmartDashboard.putNumber("rightSparkD", _rightSparkPID.getD());
+        SmartDashboard.putNumber("rightSparkFF", _rightSparkPID.getFF());
 
         } catch (Exception ex){
             ex.printStackTrace();
@@ -79,15 +85,15 @@ public class DriveTrain implements Subsystem {
         _targetDistanceRight = -targetDistance;
     }
     public void updatePIDFromDashboard() {
-        //_leftSparkPID.setP(SmartDashboard.getNumber("leftSparkP", Constants.kVelocityPIDP));
-        //_leftSparkPID.setI(SmartDashboard.getNumber("leftSparkI", Constants.kVelocityPIDI));
-        //_leftSparkPID.setD(SmartDashboard.getNumber("leftSparkD", Constants.kVelocityPIDD));
-        //_leftSparkPID.setFF(SmartDashboard.getNumber("leftSparkFF", Constants.kVelocityPIDFF));
+        _leftSparkPID.setP(SmartDashboard.getNumber("leftSparkP", Constants.kVelocityPIDP));
+        _leftSparkPID.setI(SmartDashboard.getNumber("leftSparkI", Constants.kVelocityPIDI));
+        _leftSparkPID.setD(SmartDashboard.getNumber("leftSparkD", Constants.kVelocityPIDD));
+        _leftSparkPID.setFF(SmartDashboard.getNumber("leftSparkFF", Constants.kVelocityPIDFF));
 
-        //_rightSparkPID.setP(SmartDashboard.getNumber("leftSparkP", Constants.kVelocityPIDP));
-        //_rightSparkPID.setI(SmartDashboard.getNumber("leftSparkI", Constants.kVelocityPIDI));
-        //_rightSparkPID.setD(SmartDashboard.getNumber("leftSparkD", Constants.kVelocityPIDD));
-        //_rightSparkPID.setFF(SmartDashboard.getNumber("leftSparkFF", Constants.kVelocityPIDFF));
+        _rightSparkPID.setP(SmartDashboard.getNumber("leftSparkP", Constants.kVelocityPIDP));
+        _rightSparkPID.setI(SmartDashboard.getNumber("leftSparkI", Constants.kVelocityPIDI));
+        _rightSparkPID.setD(SmartDashboard.getNumber("leftSparkD", Constants.kVelocityPIDD));
+        _rightSparkPID.setFF(SmartDashboard.getNumber("leftSparkFF", Constants.kVelocityPIDFF));
     }
     public void driveDistanceSmartMotion(){
         if (_targetDistanceLeft < 0){
@@ -190,14 +196,6 @@ public class DriveTrain implements Subsystem {
         SmartDashboard.putNumber("leftDriveVelocity", _leftEncoder.getVelocity());
         SmartDashboard.putNumber("rightDrivePosition", _rightEncoder.getPosition());
         SmartDashboard.putNumber("rightDriveVelocity", _rightEncoder.getVelocity());
-        SmartDashboard.putNumber("leftSparkP", _leftSparkPID.getP());
-        SmartDashboard.putNumber("leftSparkI", _leftSparkPID.getI());
-        SmartDashboard.putNumber("leftSparkD", _leftSparkPID.getD());
-        SmartDashboard.putNumber("leftSparkFF", _leftSparkPID.getFF());
-        SmartDashboard.putNumber("rightSparkP", _rightSparkPID.getP());
-        SmartDashboard.putNumber("rightSparkI", _rightSparkPID.getI());
-        SmartDashboard.putNumber("rightSparkD", _rightSparkPID.getD());
-        SmartDashboard.putNumber("rightSparkFF", _rightSparkPID.getFF());
         SmartDashboard.putNumber("rightDriveOutput", _rightSpark.get());
         SmartDashboard.putNumber("leftDriveOutput", _leftSpark.get());
         if (Constants.kIsTestRobot){
