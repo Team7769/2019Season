@@ -23,8 +23,8 @@ public class RobotMap {
     private TalonSRX _rightElevator;
     private TalonSRX _topCollector;
     private TalonSRX _bottomCollector;
-    private Solenoid _leftCollectorSolenoid;
-    private Solenoid _rightCollectorSolenoid;
+    private Solenoid _collectorSolenoid;
+    private Solenoid _hab3Solenoid;
 
     public RobotMap(){
         try {
@@ -53,8 +53,8 @@ public class RobotMap {
             _rightElevator = new TalonSRX(Constants.kRElevatorId);
             _topCollector = new TalonSRX(Constants.kTCollectorId);
             _bottomCollector = new TalonSRX(Constants.kBCollectorId);
-            _leftCollectorSolenoid = new Solenoid(Constants.kLeftCollectorSolenoidSlot);
-            _rightCollectorSolenoid = new Solenoid(Constants.kRightCollectorSolenoidSlot);
+            _collectorSolenoid = new Solenoid(Constants.kCollectorSolenoidSlot);
+            _hab3Solenoid = new Solenoid(Constants.kHab3SolenoidSlot);
         }
         
         System.out.println("Created Robot Map");
@@ -84,10 +84,10 @@ public class RobotMap {
     public TalonSRX getBottomCollectorTalon(){
         return _bottomCollector;
     }
-    public Solenoid getLeftCollectorSolenoid(){
-        return _leftCollectorSolenoid;
+    public Solenoid getCollectorSolenoid(){
+        return _collectorSolenoid;
     }
-    public Solenoid getRightCollectorSolenoid(){
-        return _rightCollectorSolenoid;
+    public Solenoid getHab3Solenoid(){
+        return _hab3Solenoid;
     }
 }

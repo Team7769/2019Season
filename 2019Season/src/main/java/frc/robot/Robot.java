@@ -68,11 +68,11 @@ public class Robot extends TimedRobot {
     _delayTimer = 0;
 
     if (!Constants.kIsTestRobot){
-      _hab3 = new Hab3();
+      _hab3 = new Hab3(_robotMap.getHab3Solenoid());
       _arm = new Arm(_robotMap.getLeftArmTalon(), _robotMap.getRightArmTalon());
       _elevator = new Elevator(_robotMap.getLeftElevatorTalon(), _robotMap.getRightElevatorTalon());
       _collector = new Collector(_robotMap.getTopCollectorTalon(), _robotMap.getBottomCollectorTalon(), 
-                                 _robotMap.getLeftCollectorSolenoid(), _robotMap.getRightCollectorSolenoid());
+                                 _robotMap.getCollectorSolenoid());
       _compressor = new Compressor();
 
       _compressor.start();
