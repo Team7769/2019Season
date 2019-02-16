@@ -107,6 +107,10 @@ public class DriveTrain implements Subsystem {
         _rightSparkPID.setI(SmartDashboard.getNumber("leftSparkI", Constants.kVelocityPIDI));
         _rightSparkPID.setD(SmartDashboard.getNumber("leftSparkD", Constants.kVelocityPIDD));
         _rightSparkPID.setFF(SmartDashboard.getNumber("leftSparkFF", Constants.kVelocityPIDFF));
+        
+        _rotationPID.setP(SmartDashboard.getNumber("rotationPIDP", Constants.kDriveRotationP));
+        _rotationPID.setI(SmartDashboard.getNumber("rotationPIDI", Constants.kDriveRotationI));        
+        _rotationPID.setD(SmartDashboard.getNumber("rotationPIDD", Constants.kDriveRotationD));
     }
     public void driveDistanceSmartMotion(){
         if (_targetDistanceLeft < 0){
@@ -184,7 +188,7 @@ public class DriveTrain implements Subsystem {
         _rotationPID.enable();
     }
     public boolean isAngleOnTarget(){
-        if (Math.abs(_targetAngle - _gyro.getAngle()) < Constants.kDriveRotationTolerance && (Math.abs(_rotationPID.get()) < .2)){
+        if (Math.abs(_targetAngle - _gyro.getAngle()) < Constants.kDriveRotationTolerance && (Math.abs(_rotationPID.get()) < .35)){
             return true;
         }
         return false;
