@@ -56,7 +56,7 @@ public class Robot extends TimedRobot {
     _subsystems = new ArrayList<Subsystem>();
     try {
       _robotMap = new RobotMap();
-      _driveTrain = new DriveTrain(_robotMap.getLeftDriveSpark(), _robotMap.getRightDriveSpark());
+      _driveTrain = new DriveTrain(_robotMap.getLeftDriveSpark(), _robotMap.getRightDriveSpark(), _robotMap.getGyro());
       _subsystems.add(_driveTrain);
     } catch (Exception ex){
       ex.printStackTrace();
@@ -92,7 +92,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
-    switch (3) {
+    switch (5) {
       case 0:
         basicDriveAuto();
         break;
@@ -107,6 +107,9 @@ public class Robot extends TimedRobot {
         break;
       case 4:
         testAuto();
+        break;
+      case 5:
+        testRotationAuto();
         break;
       default:
         break;
@@ -134,6 +137,22 @@ public class Robot extends TimedRobot {
         }
         break;
       default:
+        _driveTrain.stop();
+        break;
+    }
+  }
+  public void testRotationAuto(){
+    switch (_autonomousCase){
+      case 0:
+        _driveTrain.turnToAngle(90);
+        _autonomousCase++;
+        break;
+      case 1:
+        if (_driveTrain.isAngleOnTarget()){
+          _autonomousCase++;
+        }
+        break;
+      case 2:
         _driveTrain.stop();
         break;
     }

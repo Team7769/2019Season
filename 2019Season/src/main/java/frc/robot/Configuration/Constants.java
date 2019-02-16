@@ -48,6 +48,11 @@ public final class Constants {
     public static final double kVelocityPIDI = 0.0;
     public static final double kVelocityPIDD = 0.0;
     public static final double kVelocityPIDFF = 0.0;
+
+    public static final double kDriveRotationP = 0.02;
+    public static final double kDriveRotationI = 0.0015;
+    public static final double kDriveRotationD = 0.0;
+    public static final double kDriveRotationTolerance = 0.125; //1 Degree
     
     //Elevator
     public static final double kElevatorP = 0.00025;
