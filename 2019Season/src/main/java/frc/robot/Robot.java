@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Configuration.Constants;
 import frc.robot.Subsystems.Arm;
 import frc.robot.Subsystems.Collector;
@@ -49,6 +50,7 @@ public class Robot extends TimedRobot {
   private int _timer;
   private int _autonomousCase;
   private int _delayTimer;
+  private String _autonomousMode;
 
   @Override
   public void robotInit() {
@@ -66,6 +68,7 @@ public class Robot extends TimedRobot {
     _timer = 0;
     _autonomousCase = 0;
     _delayTimer = 0;
+    _autonomousMode = "0";
 
     if (!Constants.kIsTestRobot){
       _hab3 = new Hab3(_robotMap.getHab3Solenoid());
@@ -88,27 +91,21 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     _autonomousCase = 0;
     _subsystems.forEach((s) -> s.ResetSensors());
+    _driveTrain.resetEncoders();
   }
 
   @Override
   public void autonomousPeriodic() {
-    switch (5) {
-      case 0:
-        basicDriveAuto();
+    switch (_autonomousMode) {
+      case "0":
         break;
-      case 1:
-        basicProfileAuto();
-        break;
-      case 2:
+      case "1":
         basicSmartMotionAuto();
         break;
-      case 3:
-        intermediateSmartMotionAuto();
+      case "2":
+        singleHatchCloseShip();
         break;
-      case 4:
-        testAuto();
-        break;
-      case 5:
+      case "9":
         testRotationAuto();
         break;
       default:
@@ -116,7 +113,8 @@ public class Robot extends TimedRobot {
     }
     
     System.out.println("Case: " + _autonomousCase);
-        
+    System.out.println("Mode: " + _autonomousMode);
+      
     _timer++;
     _delayTimer++;
   }
@@ -171,6 +169,71 @@ public class Robot extends TimedRobot {
         }
         break;
       default:
+        _driveTrain.stop();
+        break;
+    }
+  }
+  public void singleHatchCloseShip(){
+    switch (_autonomousCase){
+      case 0:
+        _driveTrain.setSmartMotionParameters(60, 36, 87);
+        _autonomousCase++;
+        break;
+      case 1:
+        _driveTrain.driveDistanceSmartMotion();
+        if (_driveTrain.isDistanceOnTarget()){
+          _driveTrain.resetEncoders();
+          _driveTrain.stop();
+          _autonomousCase++;
+        }
+        break;
+      case 2:
+        _driveTrain.turnToAngle(90);
+        _autonomousCase++;
+        break;
+      case 3:
+        if (_driveTrain.isAngleOnTarget()){
+          _driveTrain.resetEncoders();
+          _driveTrain.stop();
+          _autonomousCase++;
+        }
+        break;
+      case 4:
+        _driveTrain.setSmartMotionParameters(60, 36, 45);
+        _autonomousCase++;
+        break;
+      case 5:
+        _driveTrain.driveDistanceSmartMotion();
+        if (_driveTrain.isDistanceOnTarget()){
+          _driveTrain.resetEncoders();
+          _driveTrain.stop();
+          _autonomousCase++;
+        }
+        break;
+      case 6:
+        _driveTrain.turnToAngle(0);
+        _autonomousCase++;
+        break;
+      case 7:
+        if (_driveTrain.isAngleOnTarget()){
+          _driveTrain.stop();
+          _autonomousCase++;
+        }
+        break;
+      case 8:
+      _driveTrain.resetEncoders();
+        _driveTrain.setSmartMotionParameters(60, 36, 127);
+        _autonomousCase++;
+        break;
+      case 9:
+        _driveTrain.driveDistanceSmartMotion();
+        if (_driveTrain.isDistanceOnTarget()){
+          _driveTrain.stop();
+          _autonomousCase++;
+        }
+        break;
+      default:
+        _driveTrain.resetEncoders();
         _driveTrain.stop();
         break;
     }
@@ -302,6 +365,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic(){
+    _autonomousMode = SmartDashboard.getString("autoMode", "0");
+    SmartDashboard.putString("autoMode", _autonomousMode);
     _subsystems.forEach((s) -> s.WriteToDashboard());
   }
 

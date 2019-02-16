@@ -113,6 +113,10 @@ public class DriveTrain implements Subsystem {
         _rotationPID.setD(SmartDashboard.getNumber("rotationPIDD", Constants.kDriveRotationD));
     }
     public void driveDistanceSmartMotion(){
+        if (_leftSpark.getIdleMode() != IdleMode.kCoast){
+            _leftSpark.setIdleMode(IdleMode.kCoast);
+            _rightSpark.setIdleMode(IdleMode.kCoast);
+        }
         if (_targetDistanceLeft < 0){
             _leftSparkPID.setOutputRange(-1.0, 0);
             _rightSparkPID.setOutputRange(0, 1.0);
@@ -228,6 +232,9 @@ public class DriveTrain implements Subsystem {
         _robotDrive.tankDrive(leftSpeed, rightSpeed);
     }
     public void WriteToDashboard(){
+        if (Constants.kIsTestRobot){
+            updatePIDFromDashboard();
+        }
         SmartDashboard.putNumber("leftDrivePosition", _leftEncoder.getPosition());
         SmartDashboard.putNumber("leftDriveVelocity", _leftEncoder.getVelocity());
         SmartDashboard.putNumber("rightDrivePosition", _rightEncoder.getPosition());
@@ -240,9 +247,7 @@ public class DriveTrain implements Subsystem {
         SmartDashboard.putNumber("rotationPIDI", _rotationPID.getI());
         SmartDashboard.putNumber("rotationPIDD", _rotationPID.getD());
         SmartDashboard.putNumber("rotationPIDOutput", _rotationPID.get());
-        if (Constants.kIsTestRobot){
-            updatePIDFromDashboard();
-        }
+        
     }
 
     @Override
@@ -252,6 +257,10 @@ public class DriveTrain implements Subsystem {
         _gyro.reset();
         _targetDistanceLeft = 0;
         _targetDistanceRight = 0;
+    }
+    public void resetEncoders(){
+        _leftEncoder.setPosition(0);
+        _rightEncoder.setPosition(0);
     }
     
 
