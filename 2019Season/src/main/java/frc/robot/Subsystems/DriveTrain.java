@@ -1,9 +1,13 @@
 package frc.robot.Subsystems;
 
+import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
+import com.revrobotics.CANSparkMax.IdleMode;
+
+import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -15,23 +19,27 @@ public class DriveTrain implements Subsystem {
     private DifferentialDrive _robotDrive;
     private CANSparkMax _leftSpark;
     private CANSparkMax _rightSpark;
+    private AHRS _gyro;
     private CANEncoder _leftEncoder;
     private CANEncoder _rightEncoder;
     private CANPIDController _leftSparkPID;
     private CANPIDController _rightSparkPID;
+    private PIDController _rotationPID;
     private TrapezoidalMotionProfile _profile;
     private Timer _timer;
 
     private boolean _pidEnabled;
     private double _targetDistanceLeft;
     private double _targetDistanceRight;
+    private double _targetAngle;
     private double _tolerance;
 
-    public DriveTrain(CANSparkMax leftMotor, CANSparkMax rightMotor){
+    public DriveTrain(CANSparkMax leftMotor, CANSparkMax rightMotor, AHRS gyro){
         try {
             _robotDrive = new DifferentialDrive(leftMotor, rightMotor);
             _leftSpark = leftMotor;
             _rightSpark = rightMotor;
+            _gyro = gyro;
         } catch (Exception ex){
             ex.printStackTrace();
         }
@@ -51,7 +59,11 @@ public class DriveTrain implements Subsystem {
             //_leftSparkPID.setOutputRange(-0.75, 0.75);
             //_rightSparkPID.setOutputRange(-0.75, 0.75);
             setVelocityPIDValues();
-            
+
+            _rotationPID = new PIDController(Constants.kDriveRotationP, Constants.kDriveRotationI, Constants.kDriveRotationD, _gyro, new DriveRotationPIDOutput(this));
+            _rotationPID.setAbsoluteTolerance(Constants.kDriveRotationTolerance);
+            _rotationPID.setOutputRange(-0.5, 0.5);
+
         SmartDashboard.putNumber("leftSparkP", _leftSparkPID.getP());
         SmartDashboard.putNumber("leftSparkI", _leftSparkPID.getI());
         SmartDashboard.putNumber("leftSparkD", _leftSparkPID.getD());
@@ -67,6 +79,7 @@ public class DriveTrain implements Subsystem {
         _pidEnabled = false;
         _targetDistanceLeft = 0;
         _targetDistanceRight = 0;
+        _targetAngle = 0;
         _tolerance = 8;
         _profile = null;
         _timer = new Timer();
@@ -94,6 +107,10 @@ public class DriveTrain implements Subsystem {
         _rightSparkPID.setI(SmartDashboard.getNumber("leftSparkI", Constants.kVelocityPIDI));
         _rightSparkPID.setD(SmartDashboard.getNumber("leftSparkD", Constants.kVelocityPIDD));
         _rightSparkPID.setFF(SmartDashboard.getNumber("leftSparkFF", Constants.kVelocityPIDFF));
+        
+        _rotationPID.setP(SmartDashboard.getNumber("rotationPIDP", Constants.kDriveRotationP));
+        _rotationPID.setI(SmartDashboard.getNumber("rotationPIDI", Constants.kDriveRotationI));        
+        _rotationPID.setD(SmartDashboard.getNumber("rotationPIDD", Constants.kDriveRotationD));
     }
     public void driveDistanceSmartMotion(){
         if (_targetDistanceLeft < 0){
@@ -162,8 +179,23 @@ public class DriveTrain implements Subsystem {
         _rightSparkPID.setReference(_targetDistanceRight, ControlType.kPosition);
         _pidEnabled = true;
     }
+    public void turnToAngle(double angle){
+        _leftSpark.setIdleMode(IdleMode.kBrake);
+        _rightSpark.setIdleMode(IdleMode.kBrake);
+        _pidEnabled = true;
+        _targetAngle = angle;
+        _rotationPID.setSetpoint(angle);
+        _rotationPID.enable();
+    }
+    public boolean isAngleOnTarget(){
+        if (Math.abs(_targetAngle - _gyro.getAngle()) < Constants.kDriveRotationTolerance && (Math.abs(_rotationPID.get()) < .35)){
+            return true;
+        }
+        return false;
+    }
     public void stop() {
         _pidEnabled = false;
+        _rotationPID.disable();
         _leftSpark.set(0.0);
         _rightSpark.set(0.0);
     }
@@ -182,6 +214,10 @@ public class DriveTrain implements Subsystem {
     }
 
     public void curvatureDrive(double speed, double rotation, boolean isQuickTurn) {
+        if (_leftSpark.getIdleMode() != IdleMode.kCoast){
+            _leftSpark.setIdleMode(IdleMode.kCoast);
+            _rightSpark.setIdleMode(IdleMode.kCoast);
+        }
         double dampen = 0.6;
         _robotDrive.curvatureDrive(-speed * dampen, rotation * dampen, isQuickTurn);
     }
@@ -198,6 +234,12 @@ public class DriveTrain implements Subsystem {
         SmartDashboard.putNumber("rightDriveVelocity", _rightEncoder.getVelocity());
         SmartDashboard.putNumber("rightDriveOutput", _rightSpark.get());
         SmartDashboard.putNumber("leftDriveOutput", _leftSpark.get());
+        SmartDashboard.putNumber("gyroAngle", _gyro.getAngle());
+        SmartDashboard.putNumber("rotationPIDSetpoint", _rotationPID.getSetpoint());
+        SmartDashboard.putNumber("rotationPIDP", _rotationPID.getP());
+        SmartDashboard.putNumber("rotationPIDI", _rotationPID.getI());
+        SmartDashboard.putNumber("rotationPIDD", _rotationPID.getD());
+        SmartDashboard.putNumber("rotationPIDOutput", _rotationPID.get());
         if (Constants.kIsTestRobot){
             updatePIDFromDashboard();
         }
@@ -207,6 +249,7 @@ public class DriveTrain implements Subsystem {
     public void ResetSensors() {
         _leftEncoder.setPosition(0);
         _rightEncoder.setPosition(0);
+        _gyro.reset();
         _targetDistanceLeft = 0;
         _targetDistanceRight = 0;
     }

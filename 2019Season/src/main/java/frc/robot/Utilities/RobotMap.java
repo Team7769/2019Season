@@ -1,10 +1,12 @@
 package frc.robot.Utilities;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.SPI.Port;
 import frc.robot.Configuration.*;
 
 public class RobotMap {
@@ -25,6 +27,7 @@ public class RobotMap {
     private TalonSRX _bottomCollector;
     private Solenoid _collectorSolenoid;
     private Solenoid _hab3Solenoid;
+    private AHRS _gyro;
 
     public RobotMap(){
         try {
@@ -39,7 +42,7 @@ public class RobotMap {
         } catch (Exception ex){
             ex.printStackTrace();
         }
-
+        _gyro = new AHRS(Port.kMXP);
         if (!Constants.kIsTestRobot){
             _lmDrive = new CANSparkMax(Constants.kLMDriveId, MotorType.kBrushless);
             _lmDrive.follow(_lfDrive);
@@ -89,5 +92,8 @@ public class RobotMap {
     }
     public Solenoid getHab3Solenoid(){
         return _hab3Solenoid;
+    }
+    public AHRS getGyro(){
+        return _gyro;
     }
 }
