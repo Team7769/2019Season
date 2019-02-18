@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -83,6 +84,7 @@ public class Robot extends TimedRobot {
       _subsystems.add(_arm);
       _subsystems.add(_elevator);
       _subsystems.add(_collector);
+      _subsystems.add(_hab3);
     }
     
   }
@@ -92,10 +94,13 @@ public class Robot extends TimedRobot {
     _autonomousCase = 0;
     _subsystems.forEach((s) -> s.ResetSensors());
     _driveTrain.resetEncoders();
+    
+    System.out.println(Timer.getFPGATimestamp() +  ": Starting Autonomous Mode: " + _autonomousMode);
   }
 
   @Override
   public void autonomousPeriodic() {
+    int currentCase = _autonomousCase;
     switch (_autonomousMode) {
       case "0":
         break;
@@ -108,36 +113,21 @@ public class Robot extends TimedRobot {
       case "9":
         testRotationAuto();
         break;
+      case "10":
+        basicDriveStraightAuto();
+        break;
       default:
         break;
     }
-    
-    System.out.println("Case: " + _autonomousCase);
-    System.out.println("Mode: " + _autonomousMode);
+    if (currentCase != _autonomousCase){
+      System.out.println(Timer.getFPGATimestamp() +  ": Moving to Case: " + _autonomousCase);
+    }
       
     _timer++;
     _delayTimer++;
   }
   public void testAuto() {
     _driveTrain.arcadeDrive(1.0, 0);
-  }
-  public void basicDriveAuto(){
-    switch (_autonomousCase){
-      case 0:
-        _driveTrain.setTargetDistance(100);
-        _autonomousCase++;
-        break;
-      case 1:
-        _driveTrain.driveDistance();
-        if (_driveTrain.isDistanceOnTarget()){
-          _driveTrain.stop();
-          _autonomousCase++;
-        }
-        break;
-      default:
-        _driveTrain.stop();
-        break;
-    }
   }
   public void testRotationAuto(){
     switch (_autonomousCase){
@@ -164,6 +154,23 @@ public class Robot extends TimedRobot {
       case 1:
         _driveTrain.followProfile();
         if (_driveTrain.isProfileOnTarget()){
+          _driveTrain.stop();
+          _autonomousCase++;
+        }
+        break;
+      default:
+        _driveTrain.stop();
+        break;
+    }
+  }
+  public void basicDriveStraightAuto(){
+    switch (_autonomousCase){
+      case 0:
+        _driveTrain.driveDistance(100, 0);
+        _autonomousCase++;
+        break;
+      case 1:
+        if (_driveTrain.isDistanceOnTarget()){
           _driveTrain.stop();
           _autonomousCase++;
         }
@@ -301,7 +308,13 @@ public class Robot extends TimedRobot {
     if (!Constants.kIsTestRobot){
       teleopElevator();
       teleopCollector();
+      if (_driverController.getStartButton() && _driverController.getBackButton()){
+        executeHab3();
+      }
     }
+  }
+  public void executeHab3(){
+    //_hab3.GO();
   }
   public void teleopDrive(){
     _driveTrain.curvatureDrive(_driverController.getY(Hand.kLeft), _driverController.getX(Hand.kRight), getQuickTurn());
@@ -368,6 +381,14 @@ public class Robot extends TimedRobot {
     _autonomousMode = SmartDashboard.getString("autoMode", "0");
     SmartDashboard.putString("autoMode", _autonomousMode);
     _subsystems.forEach((s) -> s.WriteToDashboard());
+  }
+
+  @Override 
+  public void disabledPeriodic() {
+    if (!Constants.kIsTestRobot){
+      _elevator.ResetSensors();
+      _arm.ResetSensors();
+    }
   }
 
 }
