@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Configuration.Constants;
 
 public class DriveStraightWrapper implements PIDSource, PIDOutput {
@@ -16,7 +17,7 @@ public class DriveStraightWrapper implements PIDSource, PIDOutput {
 
     public DriveStraightWrapper(DriveTrain driveTrain){
         _driveTrain = driveTrain;
-        _rotationPID = new PIDController(Constants.kDriveRotationP, Constants.kDriveRotationI, Constants.kDriveRotationD, _driveTrain._gyro, new WrapRotationPIDOutput(this));
+        _rotationPID = new PIDController(Constants.kDriveStraightRotationP, Constants.kDriveStraightRotationI, Constants.kDriveStraightRotationD, _driveTrain._gyro, new WrapRotationPIDOutput(this));
         _rotationPID.setOutputRange(-1.0, 1.0);
     }
     public void enableRotationPID(double targetAngle){
@@ -35,13 +36,16 @@ public class DriveStraightWrapper implements PIDSource, PIDOutput {
 
     @Override
     public void pidWrite(double output) {
-        if (output + _rotationPower > 1.0){
-            output = 1 - _rotationPower;
-        }
+        SmartDashboard.putNumber("rotationPower", _rotationPower);
+        SmartDashboard.putNumber("driveStraightOutput", output);
         double leftPower = output + _rotationPower;
-        double rightPower = -output - _rotationPower;
+        double rightPower = output - _rotationPower;
 
-        _driveTrain.tankDrive(leftPower, rightPower);
+        SmartDashboard.putNumber("driveStraightWrapperOutputLeft", leftPower);
+        SmartDashboard.putNumber("driveStraightWrapperOutputRight", rightPower);
+        
+
+        _driveTrain.tankDrive(leftPower*.5, rightPower*.5);
     }
 
     @Override
@@ -79,7 +83,7 @@ public class DriveStraightWrapper implements PIDSource, PIDOutput {
 			@Override
 			public void pidWrite(double rotationPower) 
 			{
-				this.m_RotationPowerDestination.setRotationPower(-rotationPower); // Inverted because it's stupid
+				this.m_RotationPowerDestination.setRotationPower(rotationPower);
 			}
 
 	    }

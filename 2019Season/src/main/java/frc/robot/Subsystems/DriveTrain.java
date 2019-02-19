@@ -69,7 +69,7 @@ public class DriveTrain implements Subsystem {
             _driveStraightWrapper = new DriveStraightWrapper(this);
 
             _driveStraightPID = new PIDController(Constants.kDistancePIDP, Constants.kDistancePIDI, Constants.kDistancePIDD, _driveStraightWrapper, _driveStraightWrapper);
-            _driveStraightPID.setOutputRange(-1.0, 1.0);
+            _driveStraightPID.setOutputRange(1.0, 1.0);
 
         SmartDashboard.putNumber("leftSparkP", _leftSparkPID.getP());
         SmartDashboard.putNumber("leftSparkI", _leftSparkPID.getI());
@@ -118,6 +118,10 @@ public class DriveTrain implements Subsystem {
         _rotationPID.setP(SmartDashboard.getNumber("rotationPIDP", Constants.kDriveRotationP));
         _rotationPID.setI(SmartDashboard.getNumber("rotationPIDI", Constants.kDriveRotationI));        
         _rotationPID.setD(SmartDashboard.getNumber("rotationPIDD", Constants.kDriveRotationD));
+        
+        _driveStraightPID.setP(SmartDashboard.getNumber("driveStraightPIDP", Constants.kDistancePIDP));
+        _driveStraightPID.setI(SmartDashboard.getNumber("driveStraightPIDI", Constants.kDistancePIDI));        
+        _driveStraightPID.setD(SmartDashboard.getNumber("driveStraightPIDD", Constants.kDistancePIDD));
     }
     public void driveDistanceSmartMotion(){
         if (_leftSpark.getIdleMode() != IdleMode.kCoast){
@@ -289,6 +293,9 @@ public class DriveTrain implements Subsystem {
         SmartDashboard.putNumber("rotationPIDI", _rotationPID.getI());
         SmartDashboard.putNumber("rotationPIDD", _rotationPID.getD());
         SmartDashboard.putNumber("rotationPIDOutput", _rotationPID.get());
+        SmartDashboard.putNumber("driveStraightRotationPIDP", _driveStraightPID.getP());
+        SmartDashboard.putNumber("driveStraightRotationPIDI", _driveStraightPID.getI());
+        SmartDashboard.putNumber("driveStraightRotationPIDD", _driveStraightPID.getD());
         
     }
 

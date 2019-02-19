@@ -183,11 +183,12 @@ public class Robot extends TimedRobot {
   public void singleHatchCloseShip(){
     switch (_autonomousCase){
       case 0:
-        _driveTrain.setSmartMotionParameters(60, 36, 87);
+        //_driveTrain.setSmartMotionParameters(60, 36, 87);
+        _driveTrain.driveDistance(87, 0);
         _autonomousCase++;
         break;
       case 1:
-        _driveTrain.driveDistanceSmartMotion();
+        //_driveTrain.driveDistanceSmartMotion();
         if (_driveTrain.isDistanceOnTarget()){
           _driveTrain.resetEncoders();
           _driveTrain.stop();
@@ -206,11 +207,12 @@ public class Robot extends TimedRobot {
         }
         break;
       case 4:
-        _driveTrain.setSmartMotionParameters(60, 36, 45);
+        //_driveTrain.setSmartMotionParameters(60, 36, 45);
+        _driveTrain.driveDistance(45, 90);
         _autonomousCase++;
         break;
       case 5:
-        _driveTrain.driveDistanceSmartMotion();
+        //_driveTrain.driveDistanceSmartMotion();
         if (_driveTrain.isDistanceOnTarget()){
           _driveTrain.resetEncoders();
           _driveTrain.stop();
@@ -229,11 +231,12 @@ public class Robot extends TimedRobot {
         break;
       case 8:
       _driveTrain.resetEncoders();
-        _driveTrain.setSmartMotionParameters(60, 36, 127);
+        //_driveTrain.setSmartMotionParameters(60, 36, 127);
+        _driveTrain.driveDistance(127, 0);
         _autonomousCase++;
         break;
       case 9:
-        _driveTrain.driveDistanceSmartMotion();
+        //_driveTrain.driveDistanceSmartMotion();
         if (_driveTrain.isDistanceOnTarget()){
           _driveTrain.stop();
           _autonomousCase++;
