@@ -3,24 +3,24 @@ package frc.robot.Configuration;
 public final class Constants {
 
     //Spark Device ID's
-    public static final int kLFDriveId = 5;
-    public static final int kLMDriveId = 5;
-    public static final int kLRDriveId = 6;
-    public static final int kRFDriveId = 2;
-    public static final int kRMDriveId = 6;
-    public static final int kRRDriveId = 3;
-    public static final int kLArmId = 6;
-    public static final int kRArmId = 7;
-    public static final int kLElevatorId = 8;
-    public static final int kRElevatorId = 9;
-    public static final int kTCollectorId = 10;
-    public static final int kBCollectorId = 11;
-    public static final int kCollectorSolenoidSlot = 0;
-    public static final int kHab3SolenoidSlot = 1;
+    public static final int kRFDriveId = 2; // Right Front Spark CAN ID
+    public static final int kRMDriveId = 3; // Right Middle Spark CAN ID
+    public static final int kRRDriveId = 4; // Right Rear Spark CAN ID
+    public static final int kLFDriveId = 5; // Left Front Spark CAN ID
+    public static final int kLMDriveId = 6; // Left Middle Spark CAN ID
+    public static final int kLRDriveId = 7; // Left Rear Spark CAN ID
+    public static final int kLElevatorId = 8; // Left Elevator Talon CAN ID
+    public static final int kRElevatorId = 9; // Right Elevator Talon CAN ID
+    public static final int kLArmId = 10; // Left Arm Talon CAN ID
+    public static final int kRArmId = 11; // Right Arm Talon CAN ID
+    public static final int kTCollectorId = 10; // Top Collector Talon CAN ID
+    public static final int kBCollectorId = 11; // Bottom Collector Talon CAN ID
+    public static final int kCollectorSolenoidSlot = 0; // Collector Solenoid Slot
+    public static final int kHab3SolenoidSlot = 1; // Hab3 Solenoid Slot
 
     //Controller Usb Slots
     public static final int kDriverControllerSlot = 0;
-    public static final int kOperatorControllerSlot = 0;
+    public static final int kOperatorControllerSlot = 1;
 
     //Elevator Setpoints
     public static final double kElevatorLowHatch = 0;
@@ -49,10 +49,14 @@ public final class Constants {
     public static final double kVelocityPIDD = 0.0;
     public static final double kVelocityPIDFF = 0.0;
 
-    public static final double kDriveRotationP = 0.014;
-    public static final double kDriveRotationI = 0.00000001;
+    public static final double kDriveRotationP = 0.021;
+    public static final double kDriveRotationI = 0.0000001;
     public static final double kDriveRotationD = 0.0;
-    public static final double kDriveRotationTolerance = 0.125; //1 Degree
+    public static final double kDriveRotationTolerance = 0.25; //1 Degree
+    
+    public static final double kDriveStraightRotationP = 0.0475;
+    public static final double kDriveStraightRotationI = 0.0;
+    public static final double kDriveStraightRotationD = 0.0;
     
     //Elevator
     public static final double kElevatorP = 0.00025;

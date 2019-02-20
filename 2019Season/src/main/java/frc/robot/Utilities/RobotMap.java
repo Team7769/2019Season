@@ -38,11 +38,12 @@ public class RobotMap {
 
             _rfDrive = new CANSparkMax(Constants.kRFDriveId, MotorType.kBrushless);
             _rrDrive = new CANSparkMax(Constants.kRRDriveId, MotorType.kBrushless);
+            
+            _gyro = new AHRS(Port.kMXP);
             _rrDrive.follow(_rfDrive);
         } catch (Exception ex){
             ex.printStackTrace();
         }
-        _gyro = new AHRS(Port.kMXP);
         if (!Constants.kIsTestRobot){
             _lmDrive = new CANSparkMax(Constants.kLMDriveId, MotorType.kBrushless);
             _lmDrive.follow(_lfDrive);

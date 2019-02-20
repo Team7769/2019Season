@@ -32,8 +32,8 @@ public class Arm implements Subsystem{
         _rightTalon.set(ControlMode.PercentOutput, speed);
     }
     public void setPosition(double position) {
-        _leftTalon.set(ControlMode.Position, position);
-        _rightTalon.set(ControlMode.Position, position);
+        //_leftTalon.set(ControlMode.Position, position);
+        //_rightTalon.set(ControlMode.Position, position);
     }
     public void setPositionLowHatch(){
         setPosition(Constants.kArmLowHatch);

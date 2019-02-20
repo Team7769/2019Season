@@ -11,8 +11,10 @@ import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Configuration.Constants;
 import frc.robot.Subsystems.Arm;
 import frc.robot.Subsystems.Collector;
@@ -49,6 +51,7 @@ public class Robot extends TimedRobot {
   private int _timer;
   private int _autonomousCase;
   private int _delayTimer;
+  private String _autonomousMode;
 
   @Override
   public void robotInit() {
@@ -66,6 +69,7 @@ public class Robot extends TimedRobot {
     _timer = 0;
     _autonomousCase = 0;
     _delayTimer = 0;
+    _autonomousMode = "0";
 
     if (!Constants.kIsTestRobot){
       _hab3 = new Hab3(_robotMap.getHab3Solenoid());
@@ -80,6 +84,7 @@ public class Robot extends TimedRobot {
       _subsystems.add(_arm);
       _subsystems.add(_elevator);
       _subsystems.add(_collector);
+      _subsystems.add(_hab3);
     }
     
   }
@@ -88,58 +93,41 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     _autonomousCase = 0;
     _subsystems.forEach((s) -> s.ResetSensors());
+    _driveTrain.resetEncoders();
+    
+    System.out.println(Timer.getFPGATimestamp() +  ": Starting Autonomous Mode: " + _autonomousMode);
   }
 
   @Override
   public void autonomousPeriodic() {
-    switch (5) {
-      case 0:
-        basicDriveAuto();
+    int currentCase = _autonomousCase;
+    switch (_autonomousMode) {
+      case "0":
         break;
-      case 1:
-        basicProfileAuto();
-        break;
-      case 2:
+      case "1":
         basicSmartMotionAuto();
         break;
-      case 3:
-        intermediateSmartMotionAuto();
+      case "2":
+        singleHatchCloseShip();
         break;
-      case 4:
-        testAuto();
-        break;
-      case 5:
+      case "9":
         testRotationAuto();
+        break;
+      case "10":
+        basicDriveStraightAuto();
         break;
       default:
         break;
     }
-    
-    System.out.println("Case: " + _autonomousCase);
-        
+    if (currentCase != _autonomousCase){
+      System.out.println(Timer.getFPGATimestamp() +  ": Moving to Case: " + _autonomousCase);
+    }
+      
     _timer++;
     _delayTimer++;
   }
   public void testAuto() {
     _driveTrain.arcadeDrive(1.0, 0);
-  }
-  public void basicDriveAuto(){
-    switch (_autonomousCase){
-      case 0:
-        _driveTrain.setTargetDistance(100);
-        _autonomousCase++;
-        break;
-      case 1:
-        _driveTrain.driveDistance();
-        if (_driveTrain.isDistanceOnTarget()){
-          _driveTrain.stop();
-          _autonomousCase++;
-        }
-        break;
-      default:
-        _driveTrain.stop();
-        break;
-    }
   }
   public void testRotationAuto(){
     switch (_autonomousCase){
@@ -171,6 +159,91 @@ public class Robot extends TimedRobot {
         }
         break;
       default:
+        _driveTrain.stop();
+        break;
+    }
+  }
+  public void basicDriveStraightAuto(){
+    switch (_autonomousCase){
+      case 0:
+        _driveTrain.driveDistance(100, 0);
+        _autonomousCase++;
+        break;
+      case 1:
+        if (_driveTrain.isDistanceOnTarget()){
+          _driveTrain.stop();
+          _autonomousCase++;
+        }
+        break;
+      default:
+        _driveTrain.stop();
+        break;
+    }
+  }
+  public void singleHatchCloseShip(){
+    switch (_autonomousCase){
+      case 0:
+        //_driveTrain.setSmartMotionParameters(60, 36, 87);
+        _driveTrain.driveDistance(87, 0);
+        _autonomousCase++;
+        break;
+      case 1:
+        //_driveTrain.driveDistanceSmartMotion();
+        if (_driveTrain.isDistanceOnTarget()){
+          _driveTrain.resetEncoders();
+          _driveTrain.stop();
+          _autonomousCase++;
+        }
+        break;
+      case 2:
+        _driveTrain.turnToAngle(90);
+        _autonomousCase++;
+        break;
+      case 3:
+        if (_driveTrain.isAngleOnTarget()){
+          _driveTrain.resetEncoders();
+          _driveTrain.stop();
+          _autonomousCase++;
+        }
+        break;
+      case 4:
+        //_driveTrain.setSmartMotionParameters(60, 36, 45);
+        _driveTrain.driveDistance(45, 90);
+        _autonomousCase++;
+        break;
+      case 5:
+        //_driveTrain.driveDistanceSmartMotion();
+        if (_driveTrain.isDistanceOnTarget()){
+          _driveTrain.resetEncoders();
+          _driveTrain.stop();
+          _autonomousCase++;
+        }
+        break;
+      case 6:
+        _driveTrain.turnToAngle(0);
+        _autonomousCase++;
+        break;
+      case 7:
+        if (_driveTrain.isAngleOnTarget()){
+          _driveTrain.stop();
+          _autonomousCase++;
+        }
+        break;
+      case 8:
+      _driveTrain.resetEncoders();
+        //_driveTrain.setSmartMotionParameters(60, 36, 127);
+        _driveTrain.driveDistance(127, 0);
+        _autonomousCase++;
+        break;
+      case 9:
+        //_driveTrain.driveDistanceSmartMotion();
+        if (_driveTrain.isDistanceOnTarget()){
+          _driveTrain.stop();
+          _autonomousCase++;
+        }
+        break;
+      default:
+        _driveTrain.resetEncoders();
         _driveTrain.stop();
         break;
     }
@@ -238,7 +311,13 @@ public class Robot extends TimedRobot {
     if (!Constants.kIsTestRobot){
       teleopElevator();
       teleopCollector();
+      if (_driverController.getStartButton() && _driverController.getBackButton()){
+        executeHab3();
+      }
     }
+  }
+  public void executeHab3(){
+    //_hab3.GO();
   }
   public void teleopDrive(){
     _driveTrain.curvatureDrive(_driverController.getY(Hand.kLeft), _driverController.getX(Hand.kRight), getQuickTurn());
@@ -302,7 +381,17 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic(){
+    _autonomousMode = SmartDashboard.getString("autoMode", "0");
+    SmartDashboard.putString("autoMode", _autonomousMode);
     _subsystems.forEach((s) -> s.WriteToDashboard());
+  }
+
+  @Override 
+  public void disabledPeriodic() {
+    if (!Constants.kIsTestRobot){
+      _elevator.ResetSensors();
+      _arm.ResetSensors();
+    }
   }
 
 }
