@@ -19,14 +19,16 @@ public class DriveTrain implements Subsystem {
     private DifferentialDrive _robotDrive;
     private CANSparkMax _leftSpark;
     private CANSparkMax _rightSpark;
-    private AHRS _gyro;
-    private CANEncoder _leftEncoder;
+    protected AHRS _gyro;
+    protected CANEncoder _leftEncoder;
     private CANEncoder _rightEncoder;
     private CANPIDController _leftSparkPID;
     private CANPIDController _rightSparkPID;
     private PIDController _rotationPID;
+    private PIDController _driveStraightPID;
     private TrapezoidalMotionProfile _profile;
     private Timer _timer;
+    private DriveStraightWrapper _driveStraightWrapper;
 
     private boolean _pidEnabled;
     private double _targetDistanceLeft;
@@ -63,6 +65,11 @@ public class DriveTrain implements Subsystem {
             _rotationPID = new PIDController(Constants.kDriveRotationP, Constants.kDriveRotationI, Constants.kDriveRotationD, _gyro, new DriveRotationPIDOutput(this));
             _rotationPID.setAbsoluteTolerance(Constants.kDriveRotationTolerance);
             _rotationPID.setOutputRange(-0.5, 0.5);
+
+            _driveStraightWrapper = new DriveStraightWrapper(this);
+
+            _driveStraightPID = new PIDController(Constants.kDistancePIDP, Constants.kDistancePIDI, Constants.kDistancePIDD, _driveStraightWrapper, _driveStraightWrapper);
+            _driveStraightPID.setOutputRange(1.0, 1.0);
 
         SmartDashboard.putNumber("leftSparkP", _leftSparkPID.getP());
         SmartDashboard.putNumber("leftSparkI", _leftSparkPID.getI());
@@ -111,8 +118,16 @@ public class DriveTrain implements Subsystem {
         _rotationPID.setP(SmartDashboard.getNumber("rotationPIDP", Constants.kDriveRotationP));
         _rotationPID.setI(SmartDashboard.getNumber("rotationPIDI", Constants.kDriveRotationI));        
         _rotationPID.setD(SmartDashboard.getNumber("rotationPIDD", Constants.kDriveRotationD));
+        
+        _driveStraightPID.setP(SmartDashboard.getNumber("driveStraightPIDP", Constants.kDistancePIDP));
+        _driveStraightPID.setI(SmartDashboard.getNumber("driveStraightPIDI", Constants.kDistancePIDI));        
+        _driveStraightPID.setD(SmartDashboard.getNumber("driveStraightPIDD", Constants.kDistancePIDD));
     }
     public void driveDistanceSmartMotion(){
+        if (_leftSpark.getIdleMode() != IdleMode.kCoast){
+            _leftSpark.setIdleMode(IdleMode.kCoast);
+            _rightSpark.setIdleMode(IdleMode.kCoast);
+        }
         if (_targetDistanceLeft < 0){
             _leftSparkPID.setOutputRange(-1.0, 0);
             _rightSparkPID.setOutputRange(0, 1.0);
@@ -174,10 +189,43 @@ public class DriveTrain implements Subsystem {
         //_leftSparkPID.setReference(4300, ControlType.kVelocity);
         //_rightSparkPID.setReference(-4300, ControlType.kVelocity);
     }
-    public void driveDistance() {
-        _leftSparkPID.setReference(_targetDistanceLeft, ControlType.kPosition);
-        _rightSparkPID.setReference(_targetDistanceRight, ControlType.kPosition);
+    public void driveDistance(double distance, double targetAngle) {
+        if (_leftSpark.getIdleMode() != IdleMode.kCoast){
+            _leftSpark.setIdleMode(IdleMode.kCoast);
+            _rightSpark.setIdleMode(IdleMode.kCoast);
+        }
+
+        //Stop whatever we are currently doing
+        stop();
+        _targetDistanceLeft = distance;
+        _targetDistanceRight = -distance;
         _pidEnabled = true;
+
+        System.out.println(Timer.getFPGATimestamp() +  ": Enabling Drive Straight PID to heading: " + targetAngle);
+        _driveStraightPID.setSetpoint(distance);
+        _driveStraightPID.enable();
+        _driveStraightWrapper.enableRotationPID(targetAngle);     
+
+        System.out.println(Timer.getFPGATimestamp() +  ": Enabled Drive Straight PID to distance: " + distance + ". Initial error: " + (distance - _leftEncoder.getPosition()));
+    }
+    public void driveDistance(double distance) {
+        if (_leftSpark.getIdleMode() != IdleMode.kCoast){
+            _leftSpark.setIdleMode(IdleMode.kCoast);
+            _rightSpark.setIdleMode(IdleMode.kCoast);
+        }
+
+        //Stop whatever we are currently doing
+        stop();
+        _targetDistanceLeft = distance;
+        _targetDistanceRight = -distance;
+        _pidEnabled = true;
+
+        System.out.println(Timer.getFPGATimestamp() +  ": Enabling Drive Straight PID maintaining current heading.");
+        _driveStraightPID.setSetpoint(distance);
+        _driveStraightPID.enable();
+        _driveStraightWrapper.enableRotationPID(_gyro.getAngle());     
+
+        System.out.println(Timer.getFPGATimestamp() +  ": Enabled Drive Straight PID to distance: " + distance + ". Initial error: " + (distance - _leftEncoder.getPosition()));
     }
     public void turnToAngle(double angle){
         _leftSpark.setIdleMode(IdleMode.kBrake);
@@ -196,6 +244,8 @@ public class DriveTrain implements Subsystem {
     public void stop() {
         _pidEnabled = false;
         _rotationPID.disable();
+        _driveStraightPID.disable();
+        _driveStraightWrapper.disableRotationPID();
         _leftSpark.set(0.0);
         _rightSpark.set(0.0);
     }
@@ -228,6 +278,9 @@ public class DriveTrain implements Subsystem {
         _robotDrive.tankDrive(leftSpeed, rightSpeed);
     }
     public void WriteToDashboard(){
+        if (Constants.kIsTestRobot){
+            updatePIDFromDashboard();
+        }
         SmartDashboard.putNumber("leftDrivePosition", _leftEncoder.getPosition());
         SmartDashboard.putNumber("leftDriveVelocity", _leftEncoder.getVelocity());
         SmartDashboard.putNumber("rightDrivePosition", _rightEncoder.getPosition());
@@ -240,9 +293,10 @@ public class DriveTrain implements Subsystem {
         SmartDashboard.putNumber("rotationPIDI", _rotationPID.getI());
         SmartDashboard.putNumber("rotationPIDD", _rotationPID.getD());
         SmartDashboard.putNumber("rotationPIDOutput", _rotationPID.get());
-        if (Constants.kIsTestRobot){
-            updatePIDFromDashboard();
-        }
+        SmartDashboard.putNumber("driveStraightRotationPIDP", _driveStraightPID.getP());
+        SmartDashboard.putNumber("driveStraightRotationPIDI", _driveStraightPID.getI());
+        SmartDashboard.putNumber("driveStraightRotationPIDD", _driveStraightPID.getD());
+        
     }
 
     @Override
@@ -252,6 +306,10 @@ public class DriveTrain implements Subsystem {
         _gyro.reset();
         _targetDistanceLeft = 0;
         _targetDistanceRight = 0;
+    }
+    public void resetEncoders(){
+        _leftEncoder.setPosition(0);
+        _rightEncoder.setPosition(0);
     }
     
 
