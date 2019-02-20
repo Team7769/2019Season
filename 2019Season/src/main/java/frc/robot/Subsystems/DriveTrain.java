@@ -29,6 +29,7 @@ public class DriveTrain implements Subsystem {
     private TrapezoidalMotionProfile _profile;
     private Timer _timer;
     private DriveStraightWrapper _driveStraightWrapper;
+    private PathFollower _pathFollower;
 
     private boolean _pidEnabled;
     private double _targetDistanceLeft;
@@ -80,6 +81,7 @@ public class DriveTrain implements Subsystem {
         SmartDashboard.putNumber("rightSparkD", _rightSparkPID.getD());
         SmartDashboard.putNumber("rightSparkFF", _rightSparkPID.getFF());
 
+        _pathFollower = new PathFollower(this);
         } catch (Exception ex){
             ex.printStackTrace();
         }
@@ -90,6 +92,21 @@ public class DriveTrain implements Subsystem {
         _tolerance = 8;
         _profile = null;
         _timer = new Timer();
+    }
+    public void setRealWorldUnits(){
+        _leftEncoder.setPositionConversionFactor(Constants.kDrivePositionConversion);
+        _leftEncoder.setVelocityConversionFactor(Constants.kDriveVelocityConversion);
+
+        _rightEncoder.setPositionConversionFactor(Constants.kDrivePositionConversion);
+        _rightEncoder.setVelocityConversionFactor(Constants.kDriveVelocityConversion);
+    }
+    public void setGenericUnits(){
+        
+        _leftEncoder.setPositionConversionFactor(42);
+        _leftEncoder.setVelocityConversionFactor(1);
+
+        _rightEncoder.setPositionConversionFactor(42);
+        _rightEncoder.setVelocityConversionFactor(1);
     }
     public void setSmartMotionParameters(double maxVelocity, double maxAcceleration, double targetDistance){
 
@@ -310,6 +327,20 @@ public class DriveTrain implements Subsystem {
     public void resetEncoders(){
         _leftEncoder.setPosition(0);
         _rightEncoder.setPosition(0);
+    }
+    public int getLeftDistance(){
+        return (int)_leftEncoder.getPosition();
+    }
+    public int getRightDistance(){
+        return (int)_rightEncoder.getPosition();
+    }
+    public double getAngle(){
+        return _gyro.getAngle();
+    }
+
+    public void startPath(String pathName, boolean isReverse){
+        stop();
+        _pathFollower.setPath(pathName, isReverse);
     }
     
 
