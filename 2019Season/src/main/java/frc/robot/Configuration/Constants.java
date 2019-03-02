@@ -77,5 +77,11 @@ public final class Constants {
     public static final double kDrivePositionConversion = 6 * Math.PI / 10.71; 
 
     public static final boolean kIsTestRobot = true;
+
+    public static final String kAutonomousPositionLeft = "Left";
+    public static final String kAutonomousPositionRight = "Right";
+    public static final String kAutonomousPositionCenter = "Center";
+    public static final String kAutonomousZoneHab1 = "0";
+    public static final String kAutonomousZoneHab2 = "1";
         
 }
