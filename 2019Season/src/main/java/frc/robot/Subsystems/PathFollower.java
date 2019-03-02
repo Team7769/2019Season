@@ -20,9 +20,9 @@ public class PathFollower {
     private boolean _reversePath;
     private Notifier _notifier;
 
-    private static final int kTicksPerRev = 42;
+    private static final int kTicksPerRev = 1;
     private static final double kWheelDiameter = 6.0 / 12.0;
-    private static final double kMaxVelocity = 8.0;
+    private static final double kMaxVelocity = 3.0;
 
     public PathFollower(DriveTrain driveTrain){
         _driveTrain = driveTrain;
@@ -66,15 +66,18 @@ public class PathFollower {
             _leftFollower = new EncoderFollower(_leftTrajectory);
             _rightFollower = new EncoderFollower(_rightTrajectory);
             _leftFollower.configureEncoder(_driveTrain.getLeftDistance(), kTicksPerRev, kWheelDiameter);
-            _leftFollower.configurePIDVA(1.0, 0.0, 0.0, 1 / kMaxVelocity, 0);
+            _leftFollower.configurePIDVA(.8, 0.0, 0.0, 1 / kMaxVelocity, 0);
 
-            _rightFollower.configureEncoder(_driveTrain.getRightDistance(), kTicksPerRev, kWheelDiameter);
-            _rightFollower.configurePIDVA(1.0, 0.0, 0.0, 1 / kMaxVelocity, 0);
+            _rightFollower.configureEncoder(-_driveTrain.getRightDistance(), kTicksPerRev, kWheelDiameter);
+            _rightFollower.configurePIDVA(.8, 0.0, 0.0, 1 / kMaxVelocity, 0);
         }
+        System.out.println("Start distance: " + _driveTrain.getLeftDistance() + ", " + _driveTrain.getRightDistance());
         System.out.println(Timer.getFPGATimestamp() + ": Starting path notifier.");
+    }
+    public void startPath(){
+        _followingPath = true;
         _notifier = new Notifier(this::followPath);
         _notifier.startPeriodic(_leftTrajectory.get(0).dt);
-        _followingPath = true;
     }
     private void followPath() {
         if (_leftFollower.isFinished() || _rightFollower.isFinished()) {
@@ -88,6 +91,7 @@ public class PathFollower {
             double heading_difference = 0;
             double turn = 0;
 
+
             if (_reversePath){
                 left_speed = -_leftFollower.calculate(_driveTrain.getRightDistance());
                 right_speed = -_rightFollower.calculate(_driveTrain.getLeftDistance());
@@ -97,12 +101,14 @@ public class PathFollower {
                 turn =  0.8 * (-1.0/80.0) * heading_difference;
             } else {
                 left_speed = _leftFollower.calculate(_driveTrain.getLeftDistance());
-                right_speed = _rightFollower.calculate(_driveTrain.getRightDistance());
+                right_speed = _rightFollower.calculate(-_driveTrain.getRightDistance());
                 heading = _driveTrain.getAngle();
                 desired_heading = Pathfinder.r2d(_leftFollower.getHeading());
                 heading_difference = Pathfinder.boundHalfDegrees(desired_heading - heading);
                 turn =  0.8 * (-1.0/80.0) * heading_difference;
             }
+            System.out.println("Left Speed: " + left_speed + " + Turn: " + turn);
+            System.out.println("Right Speed: " + right_speed + " + Turn: " + turn);
           _driveTrain.tankDrive(left_speed + turn, right_speed - turn);
         }
       }

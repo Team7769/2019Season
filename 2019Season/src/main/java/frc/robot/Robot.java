@@ -60,6 +60,7 @@ public class Robot extends TimedRobot {
     try {
       _robotMap = new RobotMap();
       _driveTrain = new DriveTrain(_robotMap.getLeftDriveSpark(), _robotMap.getRightDriveSpark(), _robotMap.getGyro());
+      _driveTrain.resetEncoders();
       _subsystems.add(_driveTrain);
     } catch (Exception ex){
       ex.printStackTrace();
@@ -86,6 +87,7 @@ public class Robot extends TimedRobot {
       _subsystems.add(_collector);
       _subsystems.add(_hab3);
     }
+    _driveTrain.setPath("CrossLinePath", false);
     
   }
 
@@ -116,6 +118,9 @@ public class Robot extends TimedRobot {
       case "10":
         basicDriveStraightAuto();
         break;
+      case "11":
+        basicPathAuto();
+        break;
       default:
         break;
     }
@@ -125,6 +130,23 @@ public class Robot extends TimedRobot {
       
     _timer++;
     _delayTimer++;
+  }
+  public void basicPathAuto(){
+    switch (_autonomousCase){
+      case 0:
+        _driveTrain.startPath();
+        _autonomousCase++;
+        break;
+      case 1:
+        if (_driveTrain.isFinishedFollowingPath()){
+          _autonomousCase++;
+          _driveTrain.stop();
+          break;
+        }
+      case 2:
+        _driveTrain.stop();
+        break;
+    }
   }
   public void testAuto() {
     _driveTrain.arcadeDrive(1.0, 0);
@@ -391,6 +413,7 @@ public class Robot extends TimedRobot {
     if (!Constants.kIsTestRobot){
       _elevator.ResetSensors();
       _arm.ResetSensors();
+      _driveTrain.resetEncoders();
     }
   }
 

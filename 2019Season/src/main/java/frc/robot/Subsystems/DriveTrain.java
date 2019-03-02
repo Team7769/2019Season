@@ -102,10 +102,10 @@ public class DriveTrain implements Subsystem {
     }
     public void setGenericUnits(){
         
-        _leftEncoder.setPositionConversionFactor(42);
+        _leftEncoder.setPositionConversionFactor(1);
         _leftEncoder.setVelocityConversionFactor(1);
 
-        _rightEncoder.setPositionConversionFactor(42);
+        _rightEncoder.setPositionConversionFactor(1);
         _rightEncoder.setVelocityConversionFactor(1);
     }
     public void setSmartMotionParameters(double maxVelocity, double maxAcceleration, double targetDistance){
@@ -337,11 +337,15 @@ public class DriveTrain implements Subsystem {
     public double getAngle(){
         return _gyro.getAngle();
     }
-
-    public void startPath(String pathName, boolean isReverse){
+    public void setPath(String pathName, boolean isReverse){
         stop();
         _pathFollower.setPath(pathName, isReverse);
     }
-    
+    public void startPath(){
+        _pathFollower.startPath();
+    }
+    public boolean isFinishedFollowingPath(){
+        return _pathFollower.isFinished();
+    }
 
 }

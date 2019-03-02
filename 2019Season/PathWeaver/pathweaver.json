@@ -1,10 +1,10 @@
 {
   "lengthUnit": "Foot",
   "timeStep": 0.02,
-  "maxVelocity": 8.0,
-  "maxAcceleration": 6.56,
+  "maxVelocity": 3.0,
+  "maxAcceleration": 2.0,
   "maxJerk": 197.0,
-  "wheelBase": 1.5,
+  "wheelBase": 1.83,
   "gameName": "Destination: Deep Space",
-  "outputDir": "../src/main/java/frc/paths"
+  "outputDir": ".."
 }
