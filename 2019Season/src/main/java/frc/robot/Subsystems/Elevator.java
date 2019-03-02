@@ -11,6 +11,8 @@ public class Elevator implements Subsystem {
 
     private TalonSRX _leftTalon;
     private TalonSRX _rightTalon;
+    private double _setpoint;
+    private String _setpointName;
     
     public Elevator(TalonSRX leftTalon, TalonSRX rightTalon){
         _leftTalon = leftTalon;
@@ -21,6 +23,9 @@ public class Elevator implements Subsystem {
         _rightTalon.setInverted(true);
         _rightTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
         _rightTalon.setSelectedSensorPosition(0);
+
+        _setpointName = "Neutral";
+        _setpoint = Constants.kElevatorNeutral;
 
         setPositionPIDValues();
     }
@@ -43,21 +48,32 @@ public class Elevator implements Subsystem {
     public void setPosition(double position){
         //_leftTalon.set(ControlMode.Position, position);
         //_rightTalon.set(ControlMode.Position, position);
+        _setpoint = position;
+    }
+    
+    public void setPositionNeutral(){
+        setPosition(Constants.kElevatorNeutral);
+        _setpointName = "Neutral";
     }
     public void setPositionLowHatch(){
         setPosition(Constants.kElevatorLowHatch);
+        _setpointName = "Low Hatch";
     }
     public void setPositionLowCargo(){
         setPosition(Constants.kElevatorLowCargo);
+        _setpointName = "Low Cargo";
     }
     public void setPositionMidHatch(){
         setPosition(Constants.kElevatorMidHatch);
+        _setpointName = "Mid Hatch";
     }
     public void setPositionMidCargo(){
         setPosition(Constants.kElevatorMidCargo);
+        _setpointName = "Mid Cargo";
     }
     public void setPositionTopCargo(){
         setPosition(Constants.kElevatorTopCargo);
+        _setpointName = "Top Cargo";
     }
     
     @Override
@@ -66,6 +82,8 @@ public class Elevator implements Subsystem {
         SmartDashboard.putNumber("leftElevatorPosition", _leftTalon.getSelectedSensorPosition());
         SmartDashboard.putNumber("rightElevatorSpeed", _rightTalon.getSelectedSensorVelocity());
         SmartDashboard.putNumber("rightElevatorPosition", _rightTalon.getSelectedSensorPosition());
+
+        SmartDashboard.putString("elevatorSetpointName", _setpointName);
     }
 
     @Override
