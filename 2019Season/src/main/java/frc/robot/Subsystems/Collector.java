@@ -45,7 +45,7 @@ public class Collector implements Subsystem {
         SmartDashboard.putNumber("topCollectorPosition", _topCollector.getSelectedSensorPosition());
         SmartDashboard.putNumber("bottomCollectorSpeed", _bottomCollector.getSelectedSensorVelocity());
         SmartDashboard.putNumber("bottomCollectorPosition", _bottomCollector.getSelectedSensorPosition());
-        SmartDashboard.putBoolean("collectorHatchOut", _solenoid.get());
+        SmartDashboard.putBoolean("hatchExtended", _solenoid.get());
     }
 	
 	public void ResetSensors() {
