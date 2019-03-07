@@ -148,9 +148,6 @@ public class Robot extends TimedRobot {
         break;
     }
   }
-  public void testAuto() {
-    _driveTrain.arcadeDrive(1.0, 0);
-  }
   public void testRotationAuto(){
     switch (_autonomousCase){
       case 0:
@@ -163,24 +160,6 @@ public class Robot extends TimedRobot {
         }
         break;
       case 2:
-        _driveTrain.stop();
-        break;
-    }
-  }
-  public void basicProfileAuto(){
-    switch (_autonomousCase){
-      case 0:
-        _driveTrain.setTargetProfile(100);
-        _autonomousCase++;
-        break;
-      case 1:
-        _driveTrain.followProfile();
-        if (_driveTrain.isProfileOnTarget()){
-          _driveTrain.stop();
-          _autonomousCase++;
-        }
-        break;
-      default:
         _driveTrain.stop();
         break;
     }
@@ -266,57 +245,6 @@ public class Robot extends TimedRobot {
         break;
       default:
         _driveTrain.resetEncoders();
-        _driveTrain.stop();
-        break;
-    }
-  }
-  public void basicSmartMotionAuto(){
-    switch (_autonomousCase){
-      case 0:
-        _driveTrain.setSmartMotionParameters(84, 60, 100);
-        _autonomousCase++;
-        break;
-      case 1:
-        _driveTrain.driveDistanceSmartMotion();
-        if (_driveTrain.isDistanceOnTarget()){
-          _driveTrain.stop();
-          _autonomousCase++;
-        }
-        break;
-      default:
-        _driveTrain.stop();
-        break;
-    }
-  }
-  public void intermediateSmartMotionAuto(){
-    switch (_autonomousCase){
-      case 0:
-        _driveTrain.ResetSensors();
-        _driveTrain.setSmartMotionParameters(84, 84, 100);
-        _delayTimer = 0;
-        _autonomousCase++;
-        break;
-      case 1:
-        _driveTrain.driveDistanceSmartMotion();
-        if (_driveTrain.isDistanceOnTarget() && _delayTimer > 5){
-          _driveTrain.stop();
-          _autonomousCase++;
-        }
-        break;
-      case 2:
-        _delayTimer = 0;
-        _driveTrain.ResetSensors();
-        _driveTrain.setSmartMotionParameters(84, 84, -100);
-        _autonomousCase++;
-        break;
-      case 3:
-        _driveTrain.driveDistanceSmartMotion();
-        if (_driveTrain.isDistanceOnTarget() && _delayTimer > 5){
-          _driveTrain.stop();
-          _autonomousCase++;
-        }
-        break;
-      default:
         _driveTrain.stop();
         break;
     }

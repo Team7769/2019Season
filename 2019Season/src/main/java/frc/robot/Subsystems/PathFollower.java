@@ -7,29 +7,26 @@ import edu.wpi.first.wpilibj.Timer;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.PathfinderFRC;
 import jaci.pathfinder.Trajectory;
-import jaci.pathfinder.followers.EncoderFollower;
+import jaci.pathfinder.followers.DistanceFollower;
 
 public class PathFollower {
 
     private DriveTrain _driveTrain;
     private Trajectory _leftTrajectory;
     private Trajectory _rightTrajectory;
-    private EncoderFollower _leftFollower;
-    private EncoderFollower _rightFollower;
+    private DistanceFollower _leftFollower;
+    private DistanceFollower _rightFollower;
     private boolean _followingPath;
     private boolean _reversePath;
     private Notifier _notifier;
-
-    private static final int kTicksPerRev = 1;
-    private static final double kWheelDiameter = 6.0 / 12.0;
-    private static final double kMaxVelocity = 3.0;
+    private static final double kMaxVelocity = 8.0;
 
     public PathFollower(DriveTrain driveTrain){
         _driveTrain = driveTrain;
         _followingPath = false;
 
-        _leftFollower = new EncoderFollower();
-        _rightFollower = new EncoderFollower();
+        _leftFollower = new DistanceFollower();
+        _rightFollower = new DistanceFollower();
     }
     public boolean isFinished(){
         return _followingPath;
@@ -51,24 +48,19 @@ public class PathFollower {
         if (_leftTrajectory == null || _rightTrajectory == null){
             return;
         }
-        _driveTrain.setGenericUnits();
         _reversePath = isReverse;
         System.out.println(Timer.getFPGATimestamp() + ": Setting path followers.");
         if (isReverse){
-            _leftFollower = new EncoderFollower(_rightTrajectory);
-            _rightFollower = new EncoderFollower(_leftTrajectory);
-            _leftFollower.configureEncoder(_driveTrain.getRightDistance(), kTicksPerRev, kWheelDiameter);
+            _leftFollower = new DistanceFollower(_rightTrajectory);
+            _rightFollower = new DistanceFollower(_leftTrajectory);
             _leftFollower.configurePIDVA(1.0, 0.0, 0.0, 1 / kMaxVelocity, 0);
 
-            _rightFollower.configureEncoder(_driveTrain.getLeftDistance(), kTicksPerRev, kWheelDiameter);
             _rightFollower.configurePIDVA(1.0, 0.0, 0.0, 1 / kMaxVelocity, 0);
         } else {
-            _leftFollower = new EncoderFollower(_leftTrajectory);
-            _rightFollower = new EncoderFollower(_rightTrajectory);
-            _leftFollower.configureEncoder(_driveTrain.getLeftDistance(), kTicksPerRev, kWheelDiameter);
+            _leftFollower = new DistanceFollower(_leftTrajectory);
+            _rightFollower = new DistanceFollower(_rightTrajectory);
             _leftFollower.configurePIDVA(.8, 0.0, 0.0, 1 / kMaxVelocity, 0);
 
-            _rightFollower.configureEncoder(-_driveTrain.getRightDistance(), kTicksPerRev, kWheelDiameter);
             _rightFollower.configurePIDVA(.8, 0.0, 0.0, 1 / kMaxVelocity, 0);
         }
         System.out.println("Start distance: " + _driveTrain.getLeftDistance() + ", " + _driveTrain.getRightDistance());
