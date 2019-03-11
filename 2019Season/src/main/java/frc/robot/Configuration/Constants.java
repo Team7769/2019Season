@@ -23,6 +23,7 @@ public final class Constants {
     public static final int kOperatorControllerSlot = 1;
 
     //Elevator Setpoints
+    public static final double kElevatorNeutral = 0;
     public static final double kElevatorLowHatch = 0;
     public static final double kElevatorLowCargo = 1;
     public static final double kElevatorMidHatch = 2;
@@ -30,11 +31,12 @@ public final class Constants {
     public static final double kElevatorTopCargo = 4;
 
     //Arm Setpoints
-    public static final double kArmLowHatch = 0;
-    public static final double kArmLowCargo = 1;
-    public static final double kArmMidHatch = 2;
-    public static final double kArmMidCargo = 3;
-    public static final double kArmTopCargo = 4;
+    public static final double kArmNeutral = 0;
+    public static final double kArmLowHatch = 1;
+    public static final double kArmLowCargo = 2;
+    public static final double kArmMidHatch = 3;
+    public static final double kArmMidCargo = 4;
+    public static final double kArmTopCargo = 5;
 
     //Collector speed
     public static final double kCollectorIntakeSpeed = 0.5;
@@ -75,5 +77,11 @@ public final class Constants {
     public static final double kDrivePositionConversion = 6 * Math.PI / 10.71 / 12; // Ft
 
     public static final boolean kIsTestRobot = true;
+
+    public static final String kAutonomousPositionLeft = "Left";
+    public static final String kAutonomousPositionRight = "Right";
+    public static final String kAutonomousPositionCenter = "Center";
+    public static final String kAutonomousZoneHab1 = "0";
+    public static final String kAutonomousZoneHab2 = "1";
         
 }

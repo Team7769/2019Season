@@ -52,6 +52,9 @@ public class Robot extends TimedRobot {
   private int _autonomousCase;
   private int _delayTimer;
   private String _autonomousMode;
+  private String _autonomousStartPosition;
+  private String _autonomousStartZone;
+  private boolean _autonomousPartTwo;
 
   @Override
   public void robotInit() {
@@ -71,6 +74,9 @@ public class Robot extends TimedRobot {
     _autonomousCase = 0;
     _delayTimer = 0;
     _autonomousMode = "0";
+    _autonomousStartZone = Constants.kAutonomousZoneHab1;
+    _autonomousStartPosition = Constants.kAutonomousPositionLeft;
+    _autonomousPartTwo = false;
 
     if (!Constants.kIsTestRobot){
       _hab3 = new Hab3(_robotMap.getHab3Solenoid());
@@ -198,7 +204,11 @@ public class Robot extends TimedRobot {
         }
         break;
       case 2:
-        _driveTrain.turnToAngle(90);
+        if (_autonomousStartPosition == Constants.kAutonomousPositionRight){
+          _driveTrain.turnToAngle(-90);
+        } else {
+          _driveTrain.turnToAngle(90);
+        }
         _autonomousCase++;
         break;
       case 3:
@@ -344,6 +354,10 @@ public class Robot extends TimedRobot {
       _arm.ResetSensors();
       _driveTrain.resetEncoders();
     }
+    _autonomousStartZone = SmartDashboard.getString("startZone", Constants.kAutonomousZoneHab1);
+    _autonomousStartPosition = SmartDashboard.getString("startPosition", Constants.kAutonomousPositionLeft);
+    _autonomousPartTwo = SmartDashboard.getBoolean("partTwo", false);
+
   }
 
 }
