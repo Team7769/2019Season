@@ -74,7 +74,7 @@ public final class Constants {
 
     public static final double kDriveWheelDiameter = 6.0;
     public static final double kDriveVelocityConversion = Math.PI / 107.1; //Rev/Min -> Ft/sec
-    public static final double kDrivePositionConversion = 6 * Math.PI / 10.71; 
+    public static final double kDrivePositionConversion = 6 * Math.PI / 10.71 / 12; // Ft
 
     public static final boolean kIsTestRobot = true;
 

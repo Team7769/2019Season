@@ -6,6 +6,7 @@ import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.Timer;
@@ -26,9 +27,8 @@ public class DriveTrain implements Subsystem {
     private CANPIDController _rightSparkPID;
     private PIDController _rotationPID;
     private PIDController _driveStraightPID;
-    private TrapezoidalMotionProfile _profile;
-    private Timer _timer;
     private DriveStraightWrapper _driveStraightWrapper;
+    private PathFollower _pathFollower;
 
     private boolean _pidEnabled;
     private double _targetDistanceLeft;
@@ -41,6 +41,10 @@ public class DriveTrain implements Subsystem {
             _robotDrive = new DifferentialDrive(leftMotor, rightMotor);
             _leftSpark = leftMotor;
             _rightSpark = rightMotor;
+            _leftSpark.setControlFramePeriodMs(10);
+            _rightSpark.setControlFramePeriodMs(10);
+            _leftSpark.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 10);
+            _rightSpark.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 10);
             _gyro = gyro;
         } catch (Exception ex){
             ex.printStackTrace();
@@ -58,10 +62,6 @@ public class DriveTrain implements Subsystem {
             _leftSparkPID = _leftSpark.getPIDController();
             _rightSparkPID = _rightSpark.getPIDController();
 
-            //_leftSparkPID.setOutputRange(-0.75, 0.75);
-            //_rightSparkPID.setOutputRange(-0.75, 0.75);
-            setVelocityPIDValues();
-
             _rotationPID = new PIDController(Constants.kDriveRotationP, Constants.kDriveRotationI, Constants.kDriveRotationD, _gyro, new DriveRotationPIDOutput(this));
             _rotationPID.setAbsoluteTolerance(Constants.kDriveRotationTolerance);
             _rotationPID.setOutputRange(-0.5, 0.5);
@@ -70,16 +70,7 @@ public class DriveTrain implements Subsystem {
 
             _driveStraightPID = new PIDController(Constants.kDistancePIDP, Constants.kDistancePIDI, Constants.kDistancePIDD, _driveStraightWrapper, _driveStraightWrapper);
             _driveStraightPID.setOutputRange(1.0, 1.0);
-
-        SmartDashboard.putNumber("leftSparkP", _leftSparkPID.getP());
-        SmartDashboard.putNumber("leftSparkI", _leftSparkPID.getI());
-        SmartDashboard.putNumber("leftSparkD", _leftSparkPID.getD());
-        SmartDashboard.putNumber("leftSparkFF", _leftSparkPID.getFF());
-        SmartDashboard.putNumber("rightSparkP", _rightSparkPID.getP());
-        SmartDashboard.putNumber("rightSparkI", _rightSparkPID.getI());
-        SmartDashboard.putNumber("rightSparkD", _rightSparkPID.getD());
-        SmartDashboard.putNumber("rightSparkFF", _rightSparkPID.getFF());
-
+        _pathFollower = new PathFollower(this);
         } catch (Exception ex){
             ex.printStackTrace();
         }
@@ -88,21 +79,13 @@ public class DriveTrain implements Subsystem {
         _targetDistanceRight = 0;
         _targetAngle = 0;
         _tolerance = 8;
-        _profile = null;
-        _timer = new Timer();
     }
-    public void setSmartMotionParameters(double maxVelocity, double maxAcceleration, double targetDistance){
+    public void setRealWorldUnits(){
+        _leftEncoder.setPositionConversionFactor(Constants.kDrivePositionConversion);
+        _leftEncoder.setVelocityConversionFactor(Constants.kDriveVelocityConversion);
 
-        _leftSparkPID.setSmartMotionMaxAccel(maxAcceleration, 0);
-        _leftSparkPID.setSmartMotionMaxVelocity(maxVelocity, 0);
-        _leftSparkPID.setSmartMotionMinOutputVelocity(0, 0);
-
-        _rightSparkPID.setSmartMotionMaxAccel(maxAcceleration, 0);
-        _rightSparkPID.setSmartMotionMaxVelocity(maxVelocity, 0);
-        _rightSparkPID.setSmartMotionMinOutputVelocity(0, 0);
-        
-        _targetDistanceLeft = targetDistance;
-        _targetDistanceRight = -targetDistance;
+        _rightEncoder.setPositionConversionFactor(Constants.kDrivePositionConversion);
+        _rightEncoder.setVelocityConversionFactor(Constants.kDriveVelocityConversion);
     }
     public void updatePIDFromDashboard() {
         _leftSparkPID.setP(SmartDashboard.getNumber("leftSparkP", Constants.kVelocityPIDP));
@@ -110,10 +93,10 @@ public class DriveTrain implements Subsystem {
         _leftSparkPID.setD(SmartDashboard.getNumber("leftSparkD", Constants.kVelocityPIDD));
         _leftSparkPID.setFF(SmartDashboard.getNumber("leftSparkFF", Constants.kVelocityPIDFF));
 
-        _rightSparkPID.setP(SmartDashboard.getNumber("leftSparkP", Constants.kVelocityPIDP));
-        _rightSparkPID.setI(SmartDashboard.getNumber("leftSparkI", Constants.kVelocityPIDI));
-        _rightSparkPID.setD(SmartDashboard.getNumber("leftSparkD", Constants.kVelocityPIDD));
-        _rightSparkPID.setFF(SmartDashboard.getNumber("leftSparkFF", Constants.kVelocityPIDFF));
+        _rightSparkPID.setP(SmartDashboard.getNumber("rightSparkP", Constants.kVelocityPIDP));
+        _rightSparkPID.setI(SmartDashboard.getNumber("rightSparkI", Constants.kVelocityPIDI));
+        _rightSparkPID.setD(SmartDashboard.getNumber("rightSparkD", Constants.kVelocityPIDD));
+        _rightSparkPID.setFF(SmartDashboard.getNumber("rightSparkFF", Constants.kVelocityPIDFF));
         
         _rotationPID.setP(SmartDashboard.getNumber("rotationPIDP", Constants.kDriveRotationP));
         _rotationPID.setI(SmartDashboard.getNumber("rotationPIDI", Constants.kDriveRotationI));        
@@ -123,46 +106,10 @@ public class DriveTrain implements Subsystem {
         _driveStraightPID.setI(SmartDashboard.getNumber("driveStraightPIDI", Constants.kDistancePIDI));        
         _driveStraightPID.setD(SmartDashboard.getNumber("driveStraightPIDD", Constants.kDistancePIDD));
     }
-    public void driveDistanceSmartMotion(){
-        if (_leftSpark.getIdleMode() != IdleMode.kCoast){
-            _leftSpark.setIdleMode(IdleMode.kCoast);
-            _rightSpark.setIdleMode(IdleMode.kCoast);
-        }
-        if (_targetDistanceLeft < 0){
-            _leftSparkPID.setOutputRange(-1.0, 0);
-            _rightSparkPID.setOutputRange(0, 1.0);
-        } else {
-            _leftSparkPID.setOutputRange(0, 1.0);
-            _rightSparkPID.setOutputRange(-1.0, 0);
-        }
-        _leftSparkPID.setReference(_targetDistanceLeft, ControlType.kSmartMotion);
-        _rightSparkPID.setReference(_targetDistanceRight, ControlType.kSmartMotion);
-    }
     public void setTargetDistance(double distance){
         setDistancePIDValues();
         _targetDistanceLeft = distance;
         _targetDistanceRight = distance;
-    }
-    public void setTargetProfile(double distance) {
-        _profile = new TrapezoidalMotionProfile(distance, 50, 40);
-        _targetDistanceLeft = distance;
-        setVelocityPIDValues();
-        _timer.reset();
-        _timer.start();
-    }    
-    private void setVelocityPIDValues(){
-        _leftSparkPID.setP(Constants.kVelocityPIDP);
-        _leftSparkPID.setI(Constants.kVelocityPIDI);
-        _leftSparkPID.setD(Constants.kVelocityPIDD);
-        _leftSparkPID.setFF(Constants.kVelocityPIDFF);
-        _rightSparkPID.setP(Constants.kVelocityPIDP);
-        _rightSparkPID.setI(Constants.kVelocityPIDI);
-        _rightSparkPID.setD(Constants.kVelocityPIDD);
-        _rightSparkPID.setFF(Constants.kVelocityPIDFF);
-        
-        _leftSparkPID.setOutputRange(0, 1.0);
-        _rightSparkPID.setOutputRange(-1.0, 0);
-
     }
     private void setDistancePIDValues(){
         _leftSparkPID.setP(Constants.kDistancePIDP);
@@ -173,28 +120,29 @@ public class DriveTrain implements Subsystem {
         _rightSparkPID.setI(Constants.kDistancePIDI);
         _rightSparkPID.setD(Constants.kDistancePIDD);
 
+        _leftSparkPID.setOutputRange(-1.0, 1.0);
+        _rightSparkPID.setOutputRange(-1.0, 1.0);
+    }
+    private void setPathFollowPIDValues(){
+        _leftSparkPID.setP(0);
+        _leftSparkPID.setI(0);
+        _leftSparkPID.setD(0);
         
-        _leftSparkPID.setOutputRange(-0.75, 0.75);
-        _rightSparkPID.setOutputRange(-0.75, 0.75);
-
+        _rightSparkPID.setP(0);
+        _rightSparkPID.setI(0);
+        _rightSparkPID.setD(0);
     }
-    public void followProfile(){
-        ProfilePoint target = _profile.getAtTime(_timer.get());
-        SmartDashboard.putNumber("profileTarget", target.vel);
-        SmartDashboard.putNumber("timer", _timer.get());
-        SmartDashboard.putNumber("positionTarget", _targetDistanceLeft);
-        _leftSparkPID.setReference(target.vel * 100, ControlType.kVelocity);
-        _rightSparkPID.setReference(-target.vel * 100, ControlType.kVelocity);
-
-        //_leftSparkPID.setReference(4300, ControlType.kVelocity);
-        //_rightSparkPID.setReference(-4300, ControlType.kVelocity);
-    }
+    /**
+     * Drive to a target distance, while attempting to maintain the provided angle.
+     * @param distance Distance to travel
+     * @param targetAngle Angle to follow
+     */
     public void driveDistance(double distance, double targetAngle) {
+        //Ensure Sparks are in Coast
         if (_leftSpark.getIdleMode() != IdleMode.kCoast){
             _leftSpark.setIdleMode(IdleMode.kCoast);
             _rightSpark.setIdleMode(IdleMode.kCoast);
         }
-
         //Stop whatever we are currently doing
         stop();
         _targetDistanceLeft = distance;
@@ -208,6 +156,10 @@ public class DriveTrain implements Subsystem {
 
         System.out.println(Timer.getFPGATimestamp() +  ": Enabled Drive Straight PID to distance: " + distance + ". Initial error: " + (distance - _leftEncoder.getPosition()));
     }
+    /**
+     * Drive to a target distance, while maintaining the current angle.
+     * @param distance Distance to travel
+     */
     public void driveDistance(double distance) {
         if (_leftSpark.getIdleMode() != IdleMode.kCoast){
             _leftSpark.setIdleMode(IdleMode.kCoast);
@@ -226,6 +178,16 @@ public class DriveTrain implements Subsystem {
         _driveStraightWrapper.enableRotationPID(_gyro.getAngle());     
 
         System.out.println(Timer.getFPGATimestamp() +  ": Enabled Drive Straight PID to distance: " + distance + ". Initial error: " + (distance - _leftEncoder.getPosition()));
+    }
+    /**
+     * Turn to the specified angle.
+     * @param angle Angle to turn to
+     */
+    public void runDriveMotors(double leftSpeed, double rightSpeed){
+        //_leftSpark.set(leftSpeed);
+        //_rightSpark.set(rightSpeed);
+        _leftSparkPID.setReference(leftSpeed, ControlType.kVoltage);
+        _rightSparkPID.setReference(rightSpeed, ControlType.kVoltage);
     }
     public void turnToAngle(double angle){
         _leftSpark.setIdleMode(IdleMode.kBrake);
@@ -251,18 +213,11 @@ public class DriveTrain implements Subsystem {
     }
     public boolean isDistanceOnTarget() {
         double currentDistance = _leftEncoder.getPosition();
-        if ((Math.abs(_targetDistanceLeft) - Math.abs(currentDistance)) < _tolerance){
+        if ((Math.abs(_targetDistanceLeft - currentDistance)) < _tolerance){
             return true;
         }
         return false;
     }
-    public boolean isProfileOnTarget(){
-        if (_profile.getAtTime(_timer.get()).vel == 0){
-            return true;
-        }
-        return false;
-    }
-
     public void curvatureDrive(double speed, double rotation, boolean isQuickTurn) {
         if (_leftSpark.getIdleMode() != IdleMode.kCoast){
             _leftSpark.setIdleMode(IdleMode.kCoast);
@@ -311,6 +266,25 @@ public class DriveTrain implements Subsystem {
         _leftEncoder.setPosition(0);
         _rightEncoder.setPosition(0);
     }
-    
+    public double getLeftDistance(){
+        return _leftEncoder.getPosition();
+    }
+    public double getRightDistance(){
+        return _rightEncoder.getPosition();
+    }
+    public double getAngle(){
+        return _gyro.getAngle();
+    }
+    public void setPath(String pathName, boolean isReverse){
+        stop();
+        setPathFollowPIDValues();
+        _pathFollower.setPath(pathName, isReverse);
+    }
+    public void startPath(){
+        _pathFollower.startPath();
+    }
+    public boolean isFinishedFollowingPath(){
+        return _pathFollower.isFinished();
+    }
 
 }

@@ -63,6 +63,7 @@ public class Robot extends TimedRobot {
     try {
       _robotMap = new RobotMap();
       _driveTrain = new DriveTrain(_robotMap.getLeftDriveSpark(), _robotMap.getRightDriveSpark(), _robotMap.getGyro());
+      _driveTrain.resetEncoders();
       _subsystems.add(_driveTrain);
     } catch (Exception ex){
       ex.printStackTrace();
@@ -92,6 +93,8 @@ public class Robot extends TimedRobot {
       _subsystems.add(_collector);
       _subsystems.add(_hab3);
     }
+    _driveTrain.setPath("LeftFirstShipHatchClose", false);
+    //_driveTrain.setPath("CrossLinePath", true);
     
   }
 
@@ -111,7 +114,7 @@ public class Robot extends TimedRobot {
       case "0":
         break;
       case "1":
-        basicSmartMotionAuto();
+        //basicSmartMotionAuto();
         break;
       case "2":
         singleHatchCloseShip();
@@ -121,6 +124,9 @@ public class Robot extends TimedRobot {
         break;
       case "10":
         basicDriveStraightAuto();
+        break;
+      case "11":
+        basicPathAuto();
         break;
       default:
         break;
@@ -132,8 +138,22 @@ public class Robot extends TimedRobot {
     _timer++;
     _delayTimer++;
   }
-  public void testAuto() {
-    _driveTrain.arcadeDrive(1.0, 0);
+  public void basicPathAuto(){
+    switch (_autonomousCase){
+      case 0:
+        _driveTrain.startPath();
+        _autonomousCase++;
+        break;
+      case 1:
+        if (_driveTrain.isFinishedFollowingPath()){
+          _autonomousCase++;
+          _driveTrain.stop();
+          break;
+        }
+      case 2:
+        _driveTrain.stop();
+        break;
+    }
   }
   public void testRotationAuto(){
     switch (_autonomousCase){
@@ -147,24 +167,6 @@ public class Robot extends TimedRobot {
         }
         break;
       case 2:
-        _driveTrain.stop();
-        break;
-    }
-  }
-  public void basicProfileAuto(){
-    switch (_autonomousCase){
-      case 0:
-        _driveTrain.setTargetProfile(100);
-        _autonomousCase++;
-        break;
-      case 1:
-        _driveTrain.followProfile();
-        if (_driveTrain.isProfileOnTarget()){
-          _driveTrain.stop();
-          _autonomousCase++;
-        }
-        break;
-      default:
         _driveTrain.stop();
         break;
     }
@@ -254,57 +256,6 @@ public class Robot extends TimedRobot {
         break;
       default:
         _driveTrain.resetEncoders();
-        _driveTrain.stop();
-        break;
-    }
-  }
-  public void basicSmartMotionAuto(){
-    switch (_autonomousCase){
-      case 0:
-        _driveTrain.setSmartMotionParameters(84, 60, 100);
-        _autonomousCase++;
-        break;
-      case 1:
-        _driveTrain.driveDistanceSmartMotion();
-        if (_driveTrain.isDistanceOnTarget()){
-          _driveTrain.stop();
-          _autonomousCase++;
-        }
-        break;
-      default:
-        _driveTrain.stop();
-        break;
-    }
-  }
-  public void intermediateSmartMotionAuto(){
-    switch (_autonomousCase){
-      case 0:
-        _driveTrain.ResetSensors();
-        _driveTrain.setSmartMotionParameters(84, 84, 100);
-        _delayTimer = 0;
-        _autonomousCase++;
-        break;
-      case 1:
-        _driveTrain.driveDistanceSmartMotion();
-        if (_driveTrain.isDistanceOnTarget() && _delayTimer > 5){
-          _driveTrain.stop();
-          _autonomousCase++;
-        }
-        break;
-      case 2:
-        _delayTimer = 0;
-        _driveTrain.ResetSensors();
-        _driveTrain.setSmartMotionParameters(84, 84, -100);
-        _autonomousCase++;
-        break;
-      case 3:
-        _driveTrain.driveDistanceSmartMotion();
-        if (_driveTrain.isDistanceOnTarget() && _delayTimer > 5){
-          _driveTrain.stop();
-          _autonomousCase++;
-        }
-        break;
-      default:
         _driveTrain.stop();
         break;
     }
@@ -401,6 +352,7 @@ public class Robot extends TimedRobot {
     if (!Constants.kIsTestRobot){
       _elevator.ResetSensors();
       _arm.ResetSensors();
+      _driveTrain.resetEncoders();
     }
     _autonomousStartZone = SmartDashboard.getString("startZone", Constants.kAutonomousZoneHab1);
     _autonomousStartPosition = SmartDashboard.getString("startPosition", Constants.kAutonomousPositionLeft);
