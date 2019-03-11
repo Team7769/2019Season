@@ -87,7 +87,8 @@ public class Robot extends TimedRobot {
       _subsystems.add(_collector);
       _subsystems.add(_hab3);
     }
-    _driveTrain.setPath("CrossLinePath", false);
+    _driveTrain.setPath("LeftFirstShipHatchClose", false);
+    //_driveTrain.setPath("CrossLinePath", true);
     
   }
 
@@ -107,7 +108,7 @@ public class Robot extends TimedRobot {
       case "0":
         break;
       case "1":
-        basicSmartMotionAuto();
+        //basicSmartMotionAuto();
         break;
       case "2":
         singleHatchCloseShip();

@@ -6,6 +6,7 @@ import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.Timer;
@@ -40,6 +41,10 @@ public class DriveTrain implements Subsystem {
             _robotDrive = new DifferentialDrive(leftMotor, rightMotor);
             _leftSpark = leftMotor;
             _rightSpark = rightMotor;
+            _leftSpark.setControlFramePeriodMs(10);
+            _rightSpark.setControlFramePeriodMs(10);
+            _leftSpark.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 10);
+            _rightSpark.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 10);
             _gyro = gyro;
         } catch (Exception ex){
             ex.printStackTrace();
@@ -118,6 +123,15 @@ public class DriveTrain implements Subsystem {
         _leftSparkPID.setOutputRange(-1.0, 1.0);
         _rightSparkPID.setOutputRange(-1.0, 1.0);
     }
+    private void setPathFollowPIDValues(){
+        _leftSparkPID.setP(0);
+        _leftSparkPID.setI(0);
+        _leftSparkPID.setD(0);
+        
+        _rightSparkPID.setP(0);
+        _rightSparkPID.setI(0);
+        _rightSparkPID.setD(0);
+    }
     /**
      * Drive to a target distance, while attempting to maintain the provided angle.
      * @param distance Distance to travel
@@ -169,6 +183,12 @@ public class DriveTrain implements Subsystem {
      * Turn to the specified angle.
      * @param angle Angle to turn to
      */
+    public void runDriveMotors(double leftSpeed, double rightSpeed){
+        //_leftSpark.set(leftSpeed);
+        //_rightSpark.set(rightSpeed);
+        _leftSparkPID.setReference(leftSpeed, ControlType.kVoltage);
+        _rightSparkPID.setReference(rightSpeed, ControlType.kVoltage);
+    }
     public void turnToAngle(double angle){
         _leftSpark.setIdleMode(IdleMode.kBrake);
         _rightSpark.setIdleMode(IdleMode.kBrake);
@@ -257,6 +277,7 @@ public class DriveTrain implements Subsystem {
     }
     public void setPath(String pathName, boolean isReverse){
         stop();
+        setPathFollowPIDValues();
         _pathFollower.setPath(pathName, isReverse);
     }
     public void startPath(){

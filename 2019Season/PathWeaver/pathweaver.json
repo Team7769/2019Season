@@ -1,7 +1,7 @@
 {
   "lengthUnit": "Foot",
-  "timeStep": 0.02,
-  "maxVelocity": 3.0,
+  "timeStep": 0.01,
+  "maxVelocity": 8.0,
   "maxAcceleration": 2.0,
   "maxJerk": 197.0,
   "wheelBase": 1.83,

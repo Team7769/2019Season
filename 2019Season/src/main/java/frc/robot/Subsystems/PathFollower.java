@@ -53,15 +53,15 @@ public class PathFollower {
         if (isReverse){
             _leftFollower = new DistanceFollower(_rightTrajectory);
             _rightFollower = new DistanceFollower(_leftTrajectory);
-            _leftFollower.configurePIDVA(1.0, 0.0, 0.0, 1 / kMaxVelocity, 0);
+            _leftFollower.configurePIDVA(.85, 0.0, 0.0, 1 / kMaxVelocity, 0);
 
-            _rightFollower.configurePIDVA(1.0, 0.0, 0.0, 1 / kMaxVelocity, 0);
+            _rightFollower.configurePIDVA(.85, 0.0, 0.0, 1 / kMaxVelocity, 0);
         } else {
             _leftFollower = new DistanceFollower(_leftTrajectory);
             _rightFollower = new DistanceFollower(_rightTrajectory);
-            _leftFollower.configurePIDVA(.8, 0.0, 0.0, 1 / kMaxVelocity, 0);
+            _leftFollower.configurePIDVA(.85, 0.0, 0.0, 1 / kMaxVelocity, 0);
 
-            _rightFollower.configurePIDVA(.8, 0.0, 0.0, 1 / kMaxVelocity, 0);
+            _rightFollower.configurePIDVA(.85, 0.0, 0.0, 1 / kMaxVelocity, 0);
         }
         System.out.println("Start distance: " + _driveTrain.getLeftDistance() + ", " + _driveTrain.getRightDistance());
         System.out.println(Timer.getFPGATimestamp() + ": Starting path notifier.");
@@ -82,26 +82,33 @@ public class PathFollower {
             double desired_heading = 0;
             double heading_difference = 0;
             double turn = 0;
-
+            int negateTurn = 1;
 
             if (_reversePath){
-                left_speed = -_leftFollower.calculate(_driveTrain.getRightDistance());
-                right_speed = -_rightFollower.calculate(_driveTrain.getLeftDistance());
+                left_speed = _leftFollower.calculate(_driveTrain.getRightDistance());
+                right_speed = _rightFollower.calculate(-_driveTrain.getLeftDistance());
                 heading = -_driveTrain.getAngle();
-                desired_heading = Pathfinder.r2d(-_leftFollower.getHeading());
+                desired_heading = -Pathfinder.r2d(_leftFollower.getHeading());
                 heading_difference = Pathfinder.boundHalfDegrees(desired_heading - heading);
                 turn =  0.8 * (-1.0/80.0) * heading_difference;
+                //negateTurn = -1;
+                //System.out.println("Heading: " + heading + " + Desired Heading: " + desired_heading);
+                
             } else {
                 left_speed = _leftFollower.calculate(_driveTrain.getLeftDistance());
                 right_speed = _rightFollower.calculate(-_driveTrain.getRightDistance());
-                heading = _driveTrain.getAngle();
-                desired_heading = Pathfinder.r2d(_leftFollower.getHeading());
+                heading = -_driveTrain.getAngle();
+                desired_heading = -Pathfinder.r2d(_leftFollower.getHeading());
                 heading_difference = Pathfinder.boundHalfDegrees(desired_heading - heading);
                 turn =  0.8 * (-1.0/80.0) * heading_difference;
             }
             System.out.println("Left Speed: " + left_speed + " + Turn: " + turn);
             System.out.println("Right Speed: " + right_speed + " + Turn: " + turn);
-          _driveTrain.tankDrive(left_speed + turn, right_speed - turn);
+            if (_reversePath){
+                _driveTrain.runDriveMotors(-(right_speed + turn), left_speed - turn);
+            } else {
+                _driveTrain.runDriveMotors(left_speed + turn, -(right_speed - turn));
+            }
         }
       }
 }
