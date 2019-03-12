@@ -19,10 +19,10 @@ public class Elevator implements Subsystem {
         _leftTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
         _leftTalon.setSelectedSensorPosition(0);
 
-        _rightTalon = rightTalon;
-        _rightTalon.setInverted(true);
-        _rightTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-        _rightTalon.setSelectedSensorPosition(0);
+        //_rightTalon = rightTalon;
+        //_rightTalon.setInverted(true);
+        //_rightTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+        //_rightTalon.setSelectedSensorPosition(0);
 
         _setpointName = "Neutral";
         _setpoint = Constants.kElevatorNeutral;
@@ -35,15 +35,15 @@ public class Elevator implements Subsystem {
         _leftTalon.config_kD(0, Constants.kElevatorD);
         _leftTalon.config_kF(0, Constants.kElevatorFF);
         
-        _rightTalon.config_kP(0, Constants.kElevatorP);
-        _rightTalon.config_kI(0, Constants.kElevatorI);
-        _rightTalon.config_kD(0, Constants.kElevatorD);
-        _rightTalon.config_kF(0, Constants.kElevatorFF);
+        //_rightTalon.config_kP(0, Constants.kElevatorP);
+        //_rightTalon.config_kI(0, Constants.kElevatorI);
+        //_rightTalon.config_kD(0, Constants.kElevatorD);
+        //_rightTalon.config_kF(0, Constants.kElevatorFF);
         
     }
     public void setSpeed(double speed) {
         _leftTalon.set(ControlMode.PercentOutput, speed);
-        _rightTalon.set(ControlMode.PercentOutput, speed);
+        //_rightTalon.set(ControlMode.PercentOutput, speed);
     }
     public void setPosition(double position){
         //_leftTalon.set(ControlMode.Position, position);
@@ -78,10 +78,10 @@ public class Elevator implements Subsystem {
     
     @Override
     public void WriteToDashboard() {
-        SmartDashboard.putNumber("leftElevatorSpeed", _leftTalon.getSelectedSensorVelocity());
-        SmartDashboard.putNumber("leftElevatorPosition", _leftTalon.getSelectedSensorPosition());
-        SmartDashboard.putNumber("rightElevatorSpeed", _rightTalon.getSelectedSensorVelocity());
-        SmartDashboard.putNumber("rightElevatorPosition", _rightTalon.getSelectedSensorPosition());
+        SmartDashboard.putNumber("elevatorSpeed", _leftTalon.getSelectedSensorVelocity());
+        SmartDashboard.putNumber("elevatorPosition", _leftTalon.getSelectedSensorPosition());
+        //SmartDashboard.putNumber("rightElevatorSpeed", _rightTalon.getSelectedSensorVelocity());
+        //SmartDashboard.putNumber("rightElevatorPosition", _rightTalon.getSelectedSensorPosition());
 
         SmartDashboard.putString("elevatorSetpointName", _setpointName);
     }
@@ -89,7 +89,7 @@ public class Elevator implements Subsystem {
     @Override
     public void ResetSensors() {
         _leftTalon.setSelectedSensorPosition(0);
-        _rightTalon.setSelectedSensorPosition(0);
+        //_rightTalon.setSelectedSensorPosition(0);
     }
 
 }

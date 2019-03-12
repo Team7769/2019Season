@@ -73,8 +73,8 @@ public class Arm implements Subsystem{
     }
 
     public void WriteToDashboard() {
-        SmartDashboard.putNumber("leftArmSpeed", _leftTalon.getSelectedSensorVelocity());
-        SmartDashboard.putNumber("leftArmPosition", _leftTalon.getSelectedSensorPosition());
+        SmartDashboard.putNumber("armSpeed", _leftTalon.getSelectedSensorVelocity());
+        SmartDashboard.putNumber("armPosition", _leftTalon.getSelectedSensorPosition());
         SmartDashboard.putNumber("rightArmSpeed", _rightTalon.getSelectedSensorVelocity());
         SmartDashboard.putNumber("rightArmPosition", _rightTalon.getSelectedSensorPosition());
 
