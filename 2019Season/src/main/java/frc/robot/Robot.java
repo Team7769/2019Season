@@ -56,6 +56,7 @@ public class Robot extends TimedRobot {
   private String _autonomousStartPosition;
   private String _autonomousStartZone;
   private boolean _autonomousPartTwo;
+  private boolean _sandstormOverride;
 
   @Override
   public void robotInit() {
@@ -78,11 +79,14 @@ public class Robot extends TimedRobot {
     _autonomousStartZone = Constants.kAutonomousZoneHab1;
     _autonomousStartPosition = Constants.kAutonomousPositionLeft;
     _autonomousPartTwo = false;
+    _sandstormOverride = false;
+    
+    _elevator = new Elevator(_robotMap.getElevatorTalon());
+    _subsystems.add(_elevator);
 
     if (!Constants.kIsTestRobot){
       _hab3 = new Hab3(_robotMap.getHab3Solenoid());
       _arm = new Arm(_robotMap.getLeftArmTalon(), _robotMap.getRightArmTalon());
-      _elevator = new Elevator(_robotMap.getLeftElevatorTalon(), _robotMap.getRightElevatorTalon());
       _collector = new Collector(_robotMap.getTopCollectorTalon(), _robotMap.getBottomCollectorTalon(), 
                                  _robotMap.getCollectorSolenoid());
       _compressor = new Compressor();
@@ -90,12 +94,11 @@ public class Robot extends TimedRobot {
       _compressor.start();
       _subsystems.add(_collector);
       _subsystems.add(_arm);
-      _subsystems.add(_elevator);
       _subsystems.add(_collector);
       _subsystems.add(_hab3);
     }
-    _driveTrain.setPath("LeftFirstShipHatchClose", false);
-    //_driveTrain.setPath("CrossLinePath", true);
+    //_driveTrain.setPath("LeftFirstShipHatchClose", false);
+    _driveTrain.setPath("CrossLinePath", false);
     
   }
 
@@ -104,6 +107,7 @@ public class Robot extends TimedRobot {
     _autonomousCase = 0;
     _subsystems.forEach((s) -> s.ResetSensors());
     _driveTrain.resetEncoders();
+    _sandstormOverride = false;
     
     System.out.println(Timer.getFPGATimestamp() +  ": Starting Autonomous Mode: " + _autonomousMode);
   }
@@ -111,27 +115,41 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     int currentCase = _autonomousCase;
-    switch (_autonomousMode) {
-      case "0":
-        break;
-      case "1":
-        //basicSmartMotionAuto();
-        break;
-      case "2":
-        singleHatchCloseShip();
-        break;
-      case "9":
-        testRotationAuto();
-        break;
-      case "10":
-        basicDriveStraightAuto();
-        break;
-      case "11":
-        basicPathAuto();
-        break;
-      default:
-        break;
+    if (!_sandstormOverride){
+      switch (_autonomousMode) {
+        case "0":
+          break;
+        case "1":
+          //basicSmartMotionAuto();
+          break;
+        case "2":
+          singleHatchCloseShip();
+          break;
+        case "9":
+          testRotationAuto();
+          break;
+        case "10":
+          basicDriveStraightAuto();
+          break;
+        case "11":
+          basicPathAuto();
+          break;
+        default:
+          break;
+      }
+    } else {
+      teleopDrive();
+      teleopElevator();
+      if (!Constants.kIsTestRobot){
+        teleopCollector();
+      }
     }
+    if (_driverController.getXButton()){
+      _autonomousCase = 7769;
+      _driveTrain.stop();
+      _sandstormOverride = true;
+    }
+    
     if (currentCase != _autonomousCase){
       System.out.println(Timer.getFPGATimestamp() +  ": Moving to Case: " + _autonomousCase);
     }
@@ -269,17 +287,16 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     teleopDrive();
-
+    teleopElevator();
     if (!Constants.kIsTestRobot){
-      teleopElevator();
       teleopCollector();
-      if (_driverController.getStartButton() && _driverController.getBackButton()){
+      if (_driverController.getStartButton() && _driverController.getBackButton() && _operatorController.getStartButton() && _operatorController.getBackButton()){
         executeHab3();
       }
     }
   }
   public void executeHab3(){
-    //_hab3.GO();
+    _hab3.GO();
   }
   public void teleopDrive(){
     _driveTrain.curvatureDrive(_driverController.getY(Hand.kLeft), _driverController.getX(Hand.kRight), getQuickTurn());
@@ -325,10 +342,10 @@ public class Robot extends TimedRobot {
     } else {
       _collector.setSpeed(0.0);
     }
-
-    if (_driverController.getAButton()){
+    if (Math.abs(_driverController.getTriggerAxis(Hand.kLeft)) > .05){
       _collector.grabHatch();
-    } else if (_driverController.getBButton()){
+    } else if (Math.abs(_driverController.getTriggerAxis(Hand.kRight)) > .05)
+    {
       _collector.releaseHatch();
     }
   }
