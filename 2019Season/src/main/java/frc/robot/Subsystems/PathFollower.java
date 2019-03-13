@@ -71,6 +71,11 @@ public class PathFollower {
         _notifier = new Notifier(this::followPath);
         _notifier.startPeriodic(_leftTrajectory.get(0).dt);
     }
+    public void killPath(){
+        if (_notifier != null){
+            _notifier.stop();
+        }
+    }
     private void followPath() {
         if (_leftFollower.isFinished() || _rightFollower.isFinished()) {
             _followingPath = false;

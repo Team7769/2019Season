@@ -40,8 +40,9 @@ public class Arm implements Subsystem{
         _rightTalon.set(ControlMode.PercentOutput, speed);
     }
     public void setPosition(double position) {
-        //_leftTalon.set(ControlMode.Position, position);
-        //_rightTalon.set(ControlMode.Position, position);
+        int invertOutput = _isReverse ? -1 : 1;
+        _leftTalon.set(ControlMode.Position, position * invertOutput);
+        _rightTalon.set(ControlMode.Position, position * invertOutput);
         _setpoint = position;
     }
     public void setReverse(boolean reverse){

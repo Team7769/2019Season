@@ -1,5 +1,6 @@
 package frc.robot.Configuration;
 
+/*
 //Test Robot Constants
 public final class Constants {
 
@@ -85,9 +86,8 @@ public final class Constants {
     public static final String kAutonomousZoneHab1 = "0";
     public static final String kAutonomousZoneHab2 = "1";
         
-}
+}*/
 //Competition Robot Constants
-/*
 public final class Constants {
 
     //Spark Device ID's
@@ -97,14 +97,14 @@ public final class Constants {
     public static final int kLFDriveId = 5; // Left Front Spark CAN ID
     public static final int kLMDriveId = 6; // Left Middle Spark CAN ID
     public static final int kLRDriveId = 7; // Left Rear Spark CAN ID
-    public static final int kLElevatorId = 8; // Left Elevator Talon CAN ID
-    public static final int kRElevatorId = 9; // Right Elevator Talon CAN ID
-    public static final int kLArmId = 10; // Left Arm Talon CAN ID
-    public static final int kRArmId = 11; // Right Arm Talon CAN ID
-    public static final int kTCollectorId = 10; // Top Collector Talon CAN ID
-    public static final int kBCollectorId = 11; // Bottom Collector Talon CAN ID
-    public static final int kCollectorSolenoidSlot = 0; // Collector Solenoid Slot
-    public static final int kHab3SolenoidSlot = 1; // Hab3 Solenoid Slot
+    public static final int kElevatorId = 8; // Elevator Talon CAN ID
+    public static final int kLArmId = 9; // Left Arm Talon CAN ID
+    public static final int kRArmId = 10; // Right Arm Talon CAN ID
+    public static final int kTCollectorId = 11; // Top Collector Talon CAN ID
+    public static final int kBCollectorId = 12; // Bottom Collector Talon CAN ID
+    public static final int kCollectorSolenoidSlot = 2; // Collector Solenoid Slot
+    public static final int kHab3SolenoidSlotA = 0; // Hab3 Solenoid Slot A
+    public static final int kHab3SolenoidSlotB = 1; // Hab3 Solenoid Slot
 
     //Controller Usb Slots
     public static final int kDriverControllerSlot = 0;
@@ -142,7 +142,7 @@ public final class Constants {
     public static final double kDriveRotationP = 0.021;
     public static final double kDriveRotationI = 0.0000001;
     public static final double kDriveRotationD = 0.0;
-    public static final double kDriveRotationTolerance = 0.25; //1 Degree
+    public static final double kDriveRotationTolerance = 0.25; //.5 Degrees
     
     public static final double kDriveStraightRotationP = 0.0475;
     public static final double kDriveStraightRotationI = 0.0;
@@ -164,7 +164,7 @@ public final class Constants {
     public static final double kDriveVelocityConversion = Math.PI / 107.1; //Rev/Min -> Ft/sec
     public static final double kDrivePositionConversion = 6 * Math.PI / 10.71 / 12; // Ft
 
-    public static final boolean kIsTestRobot = false;
+    public static final boolean kIsTestRobot = true;
 
     public static final String kAutonomousPositionLeft = "Left";
     public static final String kAutonomousPositionRight = "Right";
@@ -172,4 +172,4 @@ public final class Constants {
     public static final String kAutonomousZoneHab1 = "0";
     public static final String kAutonomousZoneHab2 = "1";
         
-}*/
+}
