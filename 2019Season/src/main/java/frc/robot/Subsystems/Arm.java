@@ -37,12 +37,10 @@ public class Arm implements Subsystem{
     }
     public void setSpeed(double speed) {
         _leftTalon.set(ControlMode.PercentOutput, speed);
-        _rightTalon.set(ControlMode.PercentOutput, speed);
     }
     public void setPosition(double position) {
         int invertOutput = _isReverse ? -1 : 1;
         _leftTalon.set(ControlMode.Position, position * invertOutput);
-        _rightTalon.set(ControlMode.Position, position * invertOutput);
         _setpoint = position;
     }
     public void setReverse(boolean reverse){
@@ -76,8 +74,6 @@ public class Arm implements Subsystem{
     public void WriteToDashboard() {
         SmartDashboard.putNumber("armSpeed", _leftTalon.getSelectedSensorVelocity());
         SmartDashboard.putNumber("armPosition", _leftTalon.getSelectedSensorPosition());
-        SmartDashboard.putNumber("rightArmSpeed", _rightTalon.getSelectedSensorVelocity());
-        SmartDashboard.putNumber("rightArmPosition", _rightTalon.getSelectedSensorPosition());
 
         SmartDashboard.putString("armSetpointName", _setpointName);
         SmartDashboard.putString("armOrientation", _isReverse ? "Reverse" : "Forward");
@@ -85,7 +81,6 @@ public class Arm implements Subsystem{
 
 	public void ResetSensors() {
         _leftTalon.setSelectedSensorPosition(0);
-        _rightTalon.setSelectedSensorPosition(0);
 	}
 
 }
