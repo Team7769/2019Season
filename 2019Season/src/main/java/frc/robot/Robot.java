@@ -57,6 +57,7 @@ public class Robot extends TimedRobot {
   private String _autonomousStartZone;
   private boolean _autonomousPartTwo;
   private boolean _sandstormOverride;
+  private boolean _manualElevator;
 
   @Override
   public void robotInit() {
@@ -80,6 +81,7 @@ public class Robot extends TimedRobot {
     _autonomousStartPosition = Constants.kAutonomousPositionLeft;
     _autonomousPartTwo = false;
     _sandstormOverride = false;
+    _manualElevator = false;
     
     _elevator = new Elevator(_robotMap.getElevatorTalon());
     _subsystems.add(_elevator);
@@ -291,12 +293,20 @@ public class Robot extends TimedRobot {
     if (!Constants.kIsTestRobot){
       teleopCollector();
       if (_driverController.getStartButton() && _driverController.getBackButton() && _operatorController.getStartButton() && _operatorController.getBackButton()){
+        System.out.println("Hab 3");
         executeHab3();
+      }
+      if (_driverController.getYButton() && _driverController.getBButton()){
+        System.out.println("Hab 3 Retract");
+        retractHab3();
       }
     }
   }
   public void executeHab3(){
     _hab3.GO();
+  }
+  public void retractHab3(){
+    _hab3.Retract();
   }
   public void teleopDrive(){
     _driveTrain.curvatureDrive(_driverController.getY(Hand.kLeft), _driverController.getX(Hand.kRight), getQuickTurn());
@@ -308,23 +318,33 @@ public class Robot extends TimedRobot {
     if (Math.abs(_operatorController.getY(Hand.kLeft)) > .05
         || Math.abs(_operatorController.getX(Hand.kRight)) > .05)
     {
+      _manualElevator = true;
       manualArm(_operatorController.getX(Hand.kRight));
       manualElevator(_operatorController.getY(Hand.kLeft));
     } else if (_operatorController.getAButton()){
-      _elevator.setPositionLowHatch();
+      _manualElevator = false;
+      //_elevator.setPositionLowHatch();
       _arm.setPositionLowHatch();
     } else if (_operatorController.getBButton()){
-      _elevator.setPositionMidHatch();
-      _arm.setPositionMidHatch();
+      _manualElevator = false;
+      _arm.setPositionNeutral();
+      //_elevator.setPositionMidHatch();
+      //_arm.setPositionMidHatch();
     } else if (_operatorController.getXButton()){
+      _manualElevator = false;
       _elevator.setPositionLowCargo();
       _arm.setPositionLowCargo();
     } else if (_operatorController.getYButton()){
+      _manualElevator = false;
       _elevator.setPositionMidCargo();
       _arm.setPositionMidCargo();
     } else if (_operatorController.getBumper(Hand.kRight)){
+      _manualElevator = false;
       _elevator.setPositionTopCargo();
       _arm.setPositionTopCargo();
+    } else if (_manualElevator){
+      manualElevator(0);
+      manualArm(0);
     }
   }
   public void manualElevator(double value){
@@ -335,12 +355,12 @@ public class Robot extends TimedRobot {
   }
   public void teleopCollector(){
     if (Math.abs(_operatorController.getTriggerAxis(Hand.kLeft)) > .05){
-      _collector.setSpeed(_operatorController.getTriggerAxis(Hand.kLeft));
+      _collector.setSpeed(-_operatorController.getTriggerAxis(Hand.kLeft));
     } else if (Math.abs(_operatorController.getTriggerAxis(Hand.kRight)) > .05)
     {
       _collector.setSpeed(_operatorController.getTriggerAxis(Hand.kRight));
     } else {
-      _collector.setSpeed(0.0);
+      _collector.setSpeed(0.1);
     }
     if (Math.abs(_driverController.getTriggerAxis(Hand.kLeft)) > .05){
       _collector.grabHatch();
@@ -368,9 +388,10 @@ public class Robot extends TimedRobot {
   @Override 
   public void disabledPeriodic() {
     if (!Constants.kIsTestRobot){
-      _elevator.ResetSensors();
+      //_elevator.ResetSensors();
       _arm.ResetSensors();
       _driveTrain.resetEncoders();
+      _hab3.Stop();
     }
     _autonomousStartZone = SmartDashboard.getString("startZone", Constants.kAutonomousZoneHab1);
     _autonomousStartPosition = SmartDashboard.getString("startPosition", Constants.kAutonomousPositionLeft);

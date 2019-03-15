@@ -20,6 +20,7 @@ public class Arm implements Subsystem{
         _leftTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
 
         _rightTalon = rightMotor;
+        //_rightTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
         _rightTalon.setInverted(true);
         _rightTalon.follow(_leftTalon);
 
@@ -28,6 +29,7 @@ public class Arm implements Subsystem{
         _setpointName = "Neutral";
 
         setPositionPIDValues();
+        setSpeed(0.0);
     }
     public void setPositionPIDValues(){
         _leftTalon.config_kP(0, Constants.kArmP);
@@ -36,6 +38,7 @@ public class Arm implements Subsystem{
         _leftTalon.config_kF(0, Constants.kArmFF);        
     }
     public void setSpeed(double speed) {
+        speed = speed * 0.35;
         _leftTalon.set(ControlMode.PercentOutput, speed);
     }
     public void setPosition(double position) {
@@ -74,6 +77,8 @@ public class Arm implements Subsystem{
     public void WriteToDashboard() {
         SmartDashboard.putNumber("armSpeed", _leftTalon.getSelectedSensorVelocity());
         SmartDashboard.putNumber("armPosition", _leftTalon.getSelectedSensorPosition());
+        //SmartDashboard.putNumber("otherArmSpeed", _leftTalon.getSelectedSensorVelocity());
+        //SmartDashboard.putNumber("otherArmPosition", _leftTalon.getSelectedSensorPosition());
 
         SmartDashboard.putString("armSetpointName", _setpointName);
         SmartDashboard.putString("armOrientation", _isReverse ? "Reverse" : "Forward");

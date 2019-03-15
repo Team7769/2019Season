@@ -13,14 +13,18 @@ public class Hab3 implements Subsystem {
         _solenoid = solenoid;
     }
     public void GO(){
-        _solenoid.set(Value.kForward);
+        _solenoid.set(Value.kReverse);
     }
     public void Retract() {
+        _solenoid.set(Value.kForward);
+    }
+    public void Stop() {
         _solenoid.set(Value.kOff);
     }
 
     public void WriteToDashboard() {
-        SmartDashboard.putBoolean("hab3Triggered", _solenoid.get() == Value.kForward);
+        SmartDashboard.putBoolean("hab3Triggered", _solenoid.get() == Value.kReverse);
+        SmartDashboard.putString("hab3Value", _solenoid.get().toString());
         //Write some data
     }
 
