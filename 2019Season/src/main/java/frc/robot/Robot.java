@@ -52,6 +52,7 @@ public class Robot extends TimedRobot {
   private int _timer;
   private int _autonomousCase;
   private int _delayTimer;
+  private int _diagnosticsTimer;
   private String _autonomousMode;
   private String _autonomousStartPosition;
   private String _autonomousStartZone;
@@ -82,6 +83,7 @@ public class Robot extends TimedRobot {
     _autonomousPartTwo = false;
     _sandstormOverride = false;
     _manualElevator = false;
+    _diagnosticsTimer = 0;
     
     _elevator = new Elevator(_robotMap.getElevatorTalon());
     _subsystems.add(_elevator);
@@ -383,6 +385,11 @@ public class Robot extends TimedRobot {
     _autonomousMode = SmartDashboard.getString("autoMode", "0");
     SmartDashboard.putString("autoMode", _autonomousMode);
     _subsystems.forEach((s) -> s.WriteToDashboard());
+    
+    if (_diagnosticsTimer >= 50){
+      _robotMap.PrintDiagnostics();
+      _diagnosticsTimer = 0;
+    }
   }
 
   @Override 

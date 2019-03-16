@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SPI.Port;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Configuration.*;
 
 public class RobotMap {
@@ -92,5 +93,15 @@ public class RobotMap {
     }
     public AHRS getGyro(){
         return _gyro;
+    }
+    public void PrintDiagnostics(){
+        System.out.println("Temp - LF: " + _lfDrive.getMotorTemperature() + " LM: " + _lmDrive.getMotorTemperature() + " LR: " + _lrDrive.getMotorTemperature());
+        System.out.println("Temp - RF: " + _rfDrive.getMotorTemperature() + " RM: " + _rmDrive.getMotorTemperature() + " RR: " + _rrDrive.getMotorTemperature());
+        SmartDashboard.putNumber("LeftFrontTemp", _lfDrive.getMotorTemperature());
+        SmartDashboard.putNumber("LeftMidTemp", _lmDrive.getMotorTemperature());
+        SmartDashboard.putNumber("LeftRearTemp", _lrDrive.getMotorTemperature());
+        SmartDashboard.putNumber("RightFrontTemp", _rfDrive.getMotorTemperature());
+        SmartDashboard.putNumber("RightMidTemp", _rmDrive.getMotorTemperature());
+        SmartDashboard.putNumber("RightRearTemp", _rrDrive.getMotorTemperature());
     }
 }
