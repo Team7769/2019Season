@@ -390,6 +390,7 @@ public class Robot extends TimedRobot {
       _robotMap.PrintDiagnostics();
       _diagnosticsTimer = 0;
     }
+    _diagnosticsTimer++;
   }
 
   @Override 
