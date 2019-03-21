@@ -31,6 +31,7 @@ public class Elevator implements Subsystem {
         
     }
     public void setSpeed(double speed) {
+        speed = speed * 0.5;
         _talon.set(ControlMode.PercentOutput, speed);
     }
     public void setPosition(double position){

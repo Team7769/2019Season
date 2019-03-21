@@ -23,6 +23,8 @@ public class Collector implements Subsystem {
         _bottomCollector = bottomCollector;
     }
     public void setSpeed(double speed){
+        //double dampen = 0.35;
+        //speed = speed * dampen;
         _topCollector.set(ControlMode.PercentOutput, speed);
         _bottomCollector.set(ControlMode.PercentOutput, speed);
     }
