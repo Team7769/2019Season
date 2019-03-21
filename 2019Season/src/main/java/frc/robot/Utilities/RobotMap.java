@@ -33,12 +33,16 @@ public class RobotMap {
     public RobotMap(){
         try {
             _lfDrive = new CANSparkMax(Constants.kLFDriveId, MotorType.kBrushless);
+            _lfDrive.setSmartCurrentLimit(40);
             
             _lrDrive = new CANSparkMax(Constants.kLRDriveId, MotorType.kBrushless);
+            _lrDrive.setSmartCurrentLimit(40);
             _lrDrive.follow(_lfDrive);
 
             _rfDrive = new CANSparkMax(Constants.kRFDriveId, MotorType.kBrushless);
+            _rfDrive.setSmartCurrentLimit(40);
             _rrDrive = new CANSparkMax(Constants.kRRDriveId, MotorType.kBrushless);
+            _rrDrive.setSmartCurrentLimit(40);
             
             _elevator = new TalonSRX(Constants.kElevatorId);
             _gyro = new AHRS(Port.kMXP);
@@ -95,13 +99,19 @@ public class RobotMap {
         return _gyro;
     }
     public void PrintDiagnostics(){
-        System.out.println("Temp - LF: " + _lfDrive.getMotorTemperature() + " LM: " + _lmDrive.getMotorTemperature() + " LR: " + _lrDrive.getMotorTemperature());
-        System.out.println("Temp - RF: " + _rfDrive.getMotorTemperature() + " RM: " + _rmDrive.getMotorTemperature() + " RR: " + _rrDrive.getMotorTemperature());
+        //System.out.println("Temp - LF: " + _lfDrive.getMotorTemperature() + " LM: " + _lmDrive.getMotorTemperature() + " LR: " + _lrDrive.getMotorTemperature());
+        //System.out.println("Temp - RF: " + _rfDrive.getMotorTemperature() + " RM: " + _rmDrive.getMotorTemperature() + " RR: " + _rrDrive.getMotorTemperature());
         SmartDashboard.putNumber("LeftFrontTemp", _lfDrive.getMotorTemperature());
-        SmartDashboard.putNumber("LeftMidTemp", _lmDrive.getMotorTemperature());
+        //SmartDashboard.putNumber("LeftMidTemp", _lmDrive.getMotorTemperature());
         SmartDashboard.putNumber("LeftRearTemp", _lrDrive.getMotorTemperature());
         SmartDashboard.putNumber("RightFrontTemp", _rfDrive.getMotorTemperature());
-        SmartDashboard.putNumber("RightMidTemp", _rmDrive.getMotorTemperature());
+        //SmartDashboard.putNumber("RightMidTemp", _rmDrive.getMotorTemperature());
         SmartDashboard.putNumber("RightRearTemp", _rrDrive.getMotorTemperature());
+        SmartDashboard.putNumber("LeftFrontCurrent", _lfDrive.getOutputCurrent());
+        //SmartDashboard.putNumber("LeftMidCurrent", _lmDrive.getMotorTemperature());
+        SmartDashboard.putNumber("LeftRearCurrent", _lrDrive.getOutputCurrent());
+        SmartDashboard.putNumber("RightFrontCurrent", _rfDrive.getOutputCurrent());
+        //SmartDashboard.putNumber("RightMidCurrent", _rmDrive.getMotorTemperature());
+        SmartDashboard.putNumber("RightRearCurrent", _rrDrive.getOutputCurrent());
     }
 }
