@@ -208,6 +208,7 @@ public class DriveTrain implements Subsystem {
         _rotationPID.disable();
         _driveStraightPID.disable();
         _driveStraightWrapper.disableRotationPID();
+        _pathFollower.killPath();
         _leftSpark.set(0.0);
         _rightSpark.set(0.0);
     }
@@ -223,8 +224,10 @@ public class DriveTrain implements Subsystem {
             _leftSpark.setIdleMode(IdleMode.kCoast);
             _rightSpark.setIdleMode(IdleMode.kCoast);
         }
-        double dampen = 0.6;
-        _robotDrive.curvatureDrive(-speed * dampen, rotation * dampen, isQuickTurn);
+        double dampen = 0.90;
+        double throttle = Constants.kIsTestRobot ? -speed * dampen : speed * dampen;
+        double turn = Constants.kIsTestRobot ? rotation : -rotation;
+        _robotDrive.curvatureDrive(throttle, turn, isQuickTurn);
     }
     public void arcadeDrive(double speed, double rotation){
         _robotDrive.arcadeDrive(speed, rotation);

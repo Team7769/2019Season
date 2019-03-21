@@ -5,14 +5,16 @@ import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SPI.Port;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Configuration.*;
 
 public class RobotMap {
 
     //6 Sparks
-    //6 TalonSRXs (2 Arm) (2 Ele) (2 Collector)
+    //5 TalonSRXs (2 Arm) (1 Ele) (2 Collector)
     private CANSparkMax _lfDrive;
     private CANSparkMax _lmDrive;
     private CANSparkMax _lrDrive;
@@ -21,12 +23,11 @@ public class RobotMap {
     private CANSparkMax _rrDrive;
     private TalonSRX _leftArm;
     private TalonSRX _rightArm;
-    private TalonSRX _leftElevator;
-    private TalonSRX _rightElevator;
+    private TalonSRX _elevator;
     private TalonSRX _topCollector;
     private TalonSRX _bottomCollector;
     private Solenoid _collectorSolenoid;
-    private Solenoid _hab3Solenoid;
+    private DoubleSolenoid _hab3Solenoid;
     private AHRS _gyro;
 
     public RobotMap(){
@@ -39,6 +40,7 @@ public class RobotMap {
             _rfDrive = new CANSparkMax(Constants.kRFDriveId, MotorType.kBrushless);
             _rrDrive = new CANSparkMax(Constants.kRRDriveId, MotorType.kBrushless);
             
+            _elevator = new TalonSRX(Constants.kElevatorId);
             _gyro = new AHRS(Port.kMXP);
             _rrDrive.follow(_rfDrive);
         } catch (Exception ex){
@@ -53,12 +55,10 @@ public class RobotMap {
 
             _leftArm = new TalonSRX(Constants.kLArmId);
             _rightArm = new TalonSRX(Constants.kRArmId);
-            _leftElevator = new TalonSRX(Constants.kLElevatorId);
-            _rightElevator = new TalonSRX(Constants.kRElevatorId);
             _topCollector = new TalonSRX(Constants.kTCollectorId);
             _bottomCollector = new TalonSRX(Constants.kBCollectorId);
             _collectorSolenoid = new Solenoid(Constants.kCollectorSolenoidSlot);
-            _hab3Solenoid = new Solenoid(Constants.kHab3SolenoidSlot);
+            _hab3Solenoid = new DoubleSolenoid(Constants.kHab3SolenoidSlotA, Constants.kHab3SolenoidSlotB);
         }
         
         System.out.println("Created Robot Map");
@@ -76,11 +76,8 @@ public class RobotMap {
     public TalonSRX getRightArmTalon(){
         return _rightArm;
     }
-    public TalonSRX getLeftElevatorTalon(){
-        return _leftElevator;
-    }
-    public TalonSRX getRightElevatorTalon(){
-        return _rightElevator;
+    public TalonSRX getElevatorTalon(){
+        return _elevator;
     }
     public TalonSRX getTopCollectorTalon(){
         return _topCollector;
@@ -91,10 +88,20 @@ public class RobotMap {
     public Solenoid getCollectorSolenoid(){
         return _collectorSolenoid;
     }
-    public Solenoid getHab3Solenoid(){
+    public DoubleSolenoid getHab3Solenoid(){
         return _hab3Solenoid;
     }
     public AHRS getGyro(){
         return _gyro;
+    }
+    public void PrintDiagnostics(){
+        System.out.println("Temp - LF: " + _lfDrive.getMotorTemperature() + " LM: " + _lmDrive.getMotorTemperature() + " LR: " + _lrDrive.getMotorTemperature());
+        System.out.println("Temp - RF: " + _rfDrive.getMotorTemperature() + " RM: " + _rmDrive.getMotorTemperature() + " RR: " + _rrDrive.getMotorTemperature());
+        SmartDashboard.putNumber("LeftFrontTemp", _lfDrive.getMotorTemperature());
+        SmartDashboard.putNumber("LeftMidTemp", _lmDrive.getMotorTemperature());
+        SmartDashboard.putNumber("LeftRearTemp", _lrDrive.getMotorTemperature());
+        SmartDashboard.putNumber("RightFrontTemp", _rfDrive.getMotorTemperature());
+        SmartDashboard.putNumber("RightMidTemp", _rmDrive.getMotorTemperature());
+        SmartDashboard.putNumber("RightRearTemp", _rrDrive.getMotorTemperature());
     }
 }
