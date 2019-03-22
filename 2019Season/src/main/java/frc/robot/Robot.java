@@ -291,7 +291,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     teleopDrive();
-    teleopElevator();
+   // teleopElevator();
     if (!Constants.kIsTestRobot){
       teleopCollector();
       if (_driverController.getStartButton() && _driverController.getBackButton() && _operatorController.getStartButton() && _operatorController.getBackButton()){
@@ -313,8 +313,8 @@ public class Robot extends TimedRobot {
   public void teleopDrive(){
     _driveTrain.curvatureDrive(_driverController.getY(Hand.kLeft), _driverController.getX(Hand.kRight), getQuickTurn());
   }
-  public boolean getQuickTurn() {
-    return _driverController.getBumper(Hand.kRight);
+  public Boolean getQuickTurn() {
+    return Math.abs(_driverController.getY(Hand.kLeft)) < 0.05; 
   }
   public void teleopElevator(){
     if (Math.abs(_operatorController.getY(Hand.kLeft)) > .05

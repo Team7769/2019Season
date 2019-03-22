@@ -34,16 +34,21 @@ public class RobotMap {
         try {
             _lfDrive = new CANSparkMax(Constants.kLFDriveId, MotorType.kBrushless);
             _lfDrive.setSmartCurrentLimit(40);
+            _lfDrive.setOpenLoopRampRate(.14);
             
             _lrDrive = new CANSparkMax(Constants.kLRDriveId, MotorType.kBrushless);
             _lrDrive.setSmartCurrentLimit(40);
+            _lrDrive.setOpenLoopRampRate(.14);
             _lrDrive.follow(_lfDrive);
 
             _rfDrive = new CANSparkMax(Constants.kRFDriveId, MotorType.kBrushless);
             _rfDrive.setSmartCurrentLimit(40);
+            _rfDrive.setOpenLoopRampRate(.14);
+
             _rrDrive = new CANSparkMax(Constants.kRRDriveId, MotorType.kBrushless);
             _rrDrive.setSmartCurrentLimit(40);
-            
+            _rrDrive.setOpenLoopRampRate(.14);
+
             _elevator = new TalonSRX(Constants.kElevatorId);
             _gyro = new AHRS(Port.kMXP);
             _rrDrive.follow(_rfDrive);
