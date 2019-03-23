@@ -291,15 +291,15 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     teleopDrive();
-   // teleopElevator();
     if (!Constants.kIsTestRobot){
+      teleopElevator();
       teleopCollector();
       if (_driverController.getStartButton() && _driverController.getBackButton() && _operatorController.getStartButton() && _operatorController.getBackButton()){
-        System.out.println("Hab 3");
+        //System.out.println("Hab 3");
         executeHab3();
       }
       if (_driverController.getYButton() && _driverController.getBButton()){
-        System.out.println("Hab 3 Retract");
+        //System.out.println("Hab 3 Retract");
         retractHab3();
       }
     }
@@ -311,43 +311,52 @@ public class Robot extends TimedRobot {
     _hab3.Retract();
   }
   public void teleopDrive(){
-    _driveTrain.curvatureDrive(_driverController.getY(Hand.kLeft), _driverController.getX(Hand.kRight), getQuickTurn());
+    if (Math.abs(_driverController.getY(Hand.kLeft)) >= 0.05 || Math.abs(_driverController.getX(Hand.kRight)) >= 0.05){
+      _driveTrain.curvatureDrive(_driverController.getY(Hand.kLeft), _driverController.getX(Hand.kRight), getQuickTurn());
+    } else {
+      _driveTrain.stop();
+    }
   }
   public Boolean getQuickTurn() {
     return Math.abs(_driverController.getY(Hand.kLeft)) < 0.05; 
   }
   public void teleopElevator(){
-    if (Math.abs(_operatorController.getY(Hand.kLeft)) > .05
-        || Math.abs(_operatorController.getX(Hand.kRight)) > .05)
+    if (Math.abs(_operatorController.getY(Hand.kLeft)) > .05)
     {
       _manualElevator = true;
-      manualArm(_operatorController.getX(Hand.kRight));
-      manualElevator(_operatorController.getY(Hand.kLeft));
-    } else if (_operatorController.getAButton()){
+    } 
+    
+    armControl();
+  }
+  public void armControl(){
+    double joystick = _operatorController.getX(Hand.kRight);
+    if (_operatorController.getAButton()){
       _manualElevator = false;
-      //_elevator.setPositionLowHatch();
-      _arm.setPositionLowHatch();
+      _elevator.setPositionLowHatch();
+      _arm.setPositionGround();
     } else if (_operatorController.getBButton()){
       _manualElevator = false;
-      _arm.setPositionNeutral();
+      _elevator.setPositionLowHatch();
+      _arm.setPositionLowHatch();
       //_elevator.setPositionMidHatch();
       //_arm.setPositionMidHatch();
     } else if (_operatorController.getXButton()){
       _manualElevator = false;
-      _elevator.setPositionLowCargo();
-      _arm.setPositionLowCargo();
+      //_arm.setPositionLowCargo();
     } else if (_operatorController.getYButton()){
       _manualElevator = false;
-      _elevator.setPositionMidCargo();
-      _arm.setPositionMidCargo();
+      _arm.setPositionNeutral();
     } else if (_operatorController.getBumper(Hand.kRight)){
       _manualElevator = false;
-      _elevator.setPositionTopCargo();
       _arm.setPositionTopCargo();
-    } else if (_manualElevator){
-      manualElevator(0);
-      manualArm(0);
+    } else if (Math.abs(joystick) > 0.1){
+      _manualElevator = true;
     }
+    if (_manualElevator){
+      manualArm(joystick);
+      manualElevator(_operatorController.getY(Hand.kLeft));
+    }
+    SmartDashboard.putBoolean("armStateManual", _manualElevator);
   }
   public void manualElevator(double value){
     _elevator.setSpeed(value);
@@ -357,10 +366,10 @@ public class Robot extends TimedRobot {
   }
   public void teleopCollector(){
     if (Math.abs(_operatorController.getTriggerAxis(Hand.kLeft)) > .05){
-      _collector.setSpeed(-_operatorController.getTriggerAxis(Hand.kLeft));
+      _collector.releaseCargo();
     } else if (Math.abs(_operatorController.getTriggerAxis(Hand.kRight)) > .05)
     {
-      _collector.setSpeed(_operatorController.getTriggerAxis(Hand.kRight));
+      _collector.intake();
     } else {
       _collector.setSpeed(0.1);
     }
@@ -385,7 +394,7 @@ public class Robot extends TimedRobot {
     _autonomousMode = SmartDashboard.getString("autoMode", "0");
     SmartDashboard.putString("autoMode", _autonomousMode);
     _subsystems.forEach((s) -> s.WriteToDashboard());
-    
+
     if (_diagnosticsTimer >= 50){
       _robotMap.PrintDiagnostics();
       _diagnosticsTimer = 0;
@@ -397,7 +406,7 @@ public class Robot extends TimedRobot {
   public void disabledPeriodic() {
     if (!Constants.kIsTestRobot){
       //_elevator.ResetSensors();
-      _arm.ResetSensors();
+      //_arm.ResetSensors();
       _driveTrain.resetEncoders();
       _hab3.Stop();
     }

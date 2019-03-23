@@ -18,6 +18,11 @@ public class Arm implements Subsystem{
     public Arm(TalonSRX leftMotor, TalonSRX rightMotor){
         _leftTalon = leftMotor;
         _leftTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+        _leftTalon.setSensorPhase(true);
+        
+        int absolutePosition = _leftTalon.getSensorCollection().getPulseWidthPosition();
+        absolutePosition &= 0xFFF;
+        _leftTalon.setSelectedSensorPosition(absolutePosition);
 
         _rightTalon = rightMotor;
         //_rightTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
@@ -53,6 +58,10 @@ public class Arm implements Subsystem{
         setPosition(Constants.kArmNeutral);
         _setpointName = "Neutral";
     }
+    public void setPositionGround(){
+        setPosition(Constants.kArmGround);
+        _setpointName = "Ground";
+    }
     public void setPositionLowHatch(){
         setPosition(Constants.kArmLowHatch);
         _setpointName = "Low Hatch";
@@ -77,6 +86,7 @@ public class Arm implements Subsystem{
     public void WriteToDashboard() {
         SmartDashboard.putNumber("armSpeed", _leftTalon.getSelectedSensorVelocity());
         SmartDashboard.putNumber("armPosition", _leftTalon.getSelectedSensorPosition());
+        SmartDashboard.putNumber("armSetpoint", _leftTalon.getClosedLoopTarget());
         //SmartDashboard.putNumber("otherArmSpeed", _leftTalon.getSelectedSensorVelocity());
         //SmartDashboard.putNumber("otherArmPosition", _leftTalon.getSelectedSensorPosition());
 

@@ -28,11 +28,15 @@ public class Collector implements Subsystem {
         _topCollector.set(ControlMode.PercentOutput, speed);
         _bottomCollector.set(ControlMode.PercentOutput, speed);
     }
+    public void setSpeed(double topSpeed, double bottomSpeed){
+        _topCollector.set(ControlMode.PercentOutput, topSpeed);
+        _bottomCollector.set(ControlMode.PercentOutput, bottomSpeed);
+    }
     public void intake(){
         setSpeed(Constants.kCollectorIntakeSpeed);
     }
     public void releaseCargo(){
-        setSpeed(Constants.kCollectorReleaseSpeed);
+        setSpeed(Constants.kCollectorReleaseSpeed, -.15);
     }
     public void grabHatch(){
         _solenoid.set(true);

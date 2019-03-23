@@ -2,6 +2,7 @@ package frc.robot.Configuration;
 
 
 //Test Robot Constants
+/*
 public final class Constants {
 
     //Spark Device ID's
@@ -87,9 +88,8 @@ public final class Constants {
     public static final String kAutonomousZoneHab1 = "0";
     public static final String kAutonomousZoneHab2 = "1";
         
-}
+}*/
 //Competition Robot Constants
-/*
 public final class Constants {
 
     //Spark Device ID's
@@ -114,23 +114,24 @@ public final class Constants {
 
     //Elevator Setpoints
     public static final double kElevatorNeutral = 0;
-    public static final double kElevatorLowHatch = 0;
-    public static final double kElevatorLowCargo = 1;
-    public static final double kElevatorMidHatch = 2;
-    public static final double kElevatorMidCargo = 3;
-    public static final double kElevatorTopCargo = 4;
+    public static final double kElevatorLowHatch = -2600;
+    public static final double kElevatorLowCargo = 0;
+    public static final double kElevatorMidHatch = 0;
+    public static final double kElevatorMidCargo = 0;
+    public static final double kElevatorTopCargo = 0;
 
     //Arm Setpoints
     public static final double kArmNeutral = 0;
-    public static final double kArmLowHatch = 1050;
-    public static final double kArmLowCargo = 2;
-    public static final double kArmMidHatch = 3;
-    public static final double kArmMidCargo = 4;
-    public static final double kArmTopCargo = 5;
+    public static final double kArmGround = -1250;
+    public static final double kArmLowHatch = -1050;//1050;
+    public static final double kArmLowCargo = -500;
+    public static final double kArmMidHatch = -500;
+    public static final double kArmMidCargo = -500;
+    public static final double kArmTopCargo = -500;
 
     //Collector speed
     public static final double kCollectorIntakeSpeed = 0.5;
-    public static final double kCollectorReleaseSpeed = -0.5;
+    public static final double kCollectorReleaseSpeed = -0.25;
 
     //PID Coefficients
     public static final double kDistancePIDP = 0.01;
@@ -151,13 +152,13 @@ public final class Constants {
     public static final double kDriveStraightRotationD = 0.0;
     
     //Elevator
-    public static final double kElevatorP = 0.00025;
+    public static final double kElevatorP = 0.25;
     public static final double kElevatorI = 0.0;
     public static final double kElevatorD = 0.0;
     public static final double kElevatorFF = 0.0;
 
     //Arm
-    public static final double kArmP = 0.00025;
+    public static final double kArmP = 0.85;
     public static final double kArmI = 0.0;
     public static final double kArmD = 0.0;
     public static final double kArmFF = 0.0;
@@ -174,4 +175,4 @@ public final class Constants {
     public static final String kAutonomousZoneHab1 = "0";
     public static final String kAutonomousZoneHab2 = "1";
         
-}*/
+}

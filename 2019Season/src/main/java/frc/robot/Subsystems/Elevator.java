@@ -17,6 +17,7 @@ public class Elevator implements Subsystem {
         _talon = talon;
         _talon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
         _talon.setSelectedSensorPosition(0);
+        _talon.setSensorPhase(true);
         
         _setpointName = "Neutral";
         _setpoint = Constants.kElevatorNeutral;
