@@ -101,8 +101,8 @@ public class Robot extends TimedRobot {
       _subsystems.add(_collector);
       _subsystems.add(_hab3);
     }
-    //_driveTrain.setPath("LeftFirstShipHatchClose", false);
-    _driveTrain.setPath("CrossLinePath", false);
+    _driveTrain.setPath("LeftFirstShipHatchClose", false);
+    //_driveTrain.setPath("CrossLinePath", false);
     
   }
 
@@ -171,8 +171,8 @@ public class Robot extends TimedRobot {
         if (_driveTrain.isFinishedFollowingPath()){
           _autonomousCase++;
           _driveTrain.stop();
-          break;
         }
+        break;
       case 2:
         _driveTrain.stop();
         break;

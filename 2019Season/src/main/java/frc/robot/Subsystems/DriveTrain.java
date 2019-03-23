@@ -208,7 +208,7 @@ public class DriveTrain implements Subsystem {
         _rotationPID.disable();
         _driveStraightPID.disable();
         _driveStraightWrapper.disableRotationPID();
-        _pathFollower.killPath();
+        //_pathFollower.killPath();
         _leftSpark.set(0.0);
         _rightSpark.set(0.0);
     }
