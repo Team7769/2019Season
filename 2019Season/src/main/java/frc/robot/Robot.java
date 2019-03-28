@@ -34,7 +34,7 @@ import frc.robot.Utilities.RobotMap;
  */
 public class Robot extends TimedRobot {
   /**
-   * Version: 1.0
+   * Version: 1.2
    * Team 7769
    */
   private RobotControllerMap _robotControllers;
