@@ -48,6 +48,10 @@ public class Elevator implements Subsystem {
         setPosition(Constants.kElevatorLowHatch);
         _setpointName = "Low Hatch";
     }
+    public void setPositionCargoShipCargo(){
+        setPosition(Constants.kElevatorCargoShipCargo);
+        _setpointName = "Cargo Ship - Cargo";
+    }
     public void setPositionLowCargo(){
         setPosition(Constants.kElevatorLowCargo);
         _setpointName = "Low Cargo";
@@ -70,6 +74,9 @@ public class Elevator implements Subsystem {
         SmartDashboard.putNumber("elevatorSpeed", _talon.getSelectedSensorVelocity());
         SmartDashboard.putNumber("elevatorPosition", _talon.getSelectedSensorPosition());
         SmartDashboard.putString("elevatorSetpointName", _setpointName);
+        if (_talon.getControlMode() == ControlMode.Position){
+            SmartDashboard.putNumber("elevatorSetpoint", _talon.getClosedLoopTarget());
+        }
     }
 
     @Override

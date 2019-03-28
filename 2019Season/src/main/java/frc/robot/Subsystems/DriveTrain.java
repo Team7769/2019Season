@@ -225,8 +225,8 @@ public class DriveTrain implements Subsystem {
             _rightSpark.setIdleMode(IdleMode.kCoast);
         }
         double dampen = 0.90;
-        double throttle = Constants.kIsTestRobot ? -speed * dampen : speed * dampen;
-        double turn = Constants.kIsTestRobot ? rotation : -rotation;
+        double throttle = Constants.kIsTestRobot ? -speed * dampen : -speed * dampen;
+        double turn = Constants.kIsTestRobot ? rotation : rotation;
         _robotDrive.curvatureDrive(throttle, turn, isQuickTurn);
     }
     public void arcadeDrive(double speed, double rotation){

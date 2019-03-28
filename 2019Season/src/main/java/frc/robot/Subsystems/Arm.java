@@ -19,6 +19,7 @@ public class Arm implements Subsystem{
         _leftTalon = leftMotor;
         _leftTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
         _leftTalon.setSensorPhase(true);
+        _leftTalon.configAllowableClosedloopError(0, 25, 300);
         
         int absolutePosition = _leftTalon.getSensorCollection().getPulseWidthPosition();
         absolutePosition &= 0xFFF;
@@ -47,9 +48,9 @@ public class Arm implements Subsystem{
         _leftTalon.set(ControlMode.PercentOutput, speed);
     }
     public void setPosition(double position) {
-        //int invertOutput = _isReverse ? -1 : 1;
-        _leftTalon.set(ControlMode.Position, position);
-        _setpoint = position;
+        int invertOutput = _isReverse ? -1 : 1;
+        _leftTalon.set(ControlMode.Position, position * invertOutput);
+        _setpoint = position * invertOutput;
     }
     public void setReverse(boolean reverse){
         _isReverse = reverse;
@@ -65,6 +66,10 @@ public class Arm implements Subsystem{
     public void setPositionLowHatch(){
         setPosition(Constants.kArmLowHatch);
         _setpointName = "Low Hatch";
+    }
+    public void setPositionCargoShipCargo(){
+        setPosition(Constants.kArmCargoShipCargo);
+        _setpointName = "Cargo Ship - Cargo";
     }
     public void setPositionLowCargo(){
         setPosition(Constants.kArmLowCargo);
@@ -86,7 +91,9 @@ public class Arm implements Subsystem{
     public void WriteToDashboard() {
         SmartDashboard.putNumber("armSpeed", _leftTalon.getSelectedSensorVelocity());
         SmartDashboard.putNumber("armPosition", _leftTalon.getSelectedSensorPosition());
-        SmartDashboard.putNumber("armSetpoint", _leftTalon.getClosedLoopTarget());
+        if (_leftTalon.getControlMode() == ControlMode.Position){
+            SmartDashboard.putNumber("armSetpoint", _leftTalon.getClosedLoopTarget());
+        }
         //SmartDashboard.putNumber("otherArmSpeed", _leftTalon.getSelectedSensorVelocity());
         //SmartDashboard.putNumber("otherArmPosition", _leftTalon.getSelectedSensorPosition());
 

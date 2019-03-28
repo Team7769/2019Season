@@ -113,19 +113,21 @@ public final class Constants {
     public static final int kOperatorControllerSlot = 1;
 
     //Elevator Setpoints
-    public static final double kElevatorNeutral = 0;
+    public static final double kElevatorNeutral = -2600;
     public static final double kElevatorLowHatch = -2600;
-    public static final double kElevatorLowCargo = 0;
-    public static final double kElevatorMidHatch = 0;
-    public static final double kElevatorMidCargo = 0;
+    public static final double kElevatorLowCargo = -2600;
+    public static final double kElevatorCargoShipCargo = -2600;
+    public static final double kElevatorMidHatch = -5400;
+    public static final double kElevatorMidCargo = -5400;
     public static final double kElevatorTopCargo = 0;
 
     //Arm Setpoints
     public static final double kArmNeutral = 0;
-    public static final double kArmGround = -1250;
+    public static final double kArmGround = -1285;
     public static final double kArmLowHatch = -1050;//1050;
+    public static final double kArmCargoShipCargo = -630;
     public static final double kArmLowCargo = -500;
-    public static final double kArmMidHatch = -500;
+    public static final double kArmMidHatch = -1050;
     public static final double kArmMidCargo = -500;
     public static final double kArmTopCargo = -500;
 
@@ -152,15 +154,15 @@ public final class Constants {
     public static final double kDriveStraightRotationD = 0.0;
     
     //Elevator
-    public static final double kElevatorP = 0.25;
+    public static final double kElevatorP = 0.75;
     public static final double kElevatorI = 0.0;
     public static final double kElevatorD = 0.0;
     public static final double kElevatorFF = 0.0;
 
     //Arm
-    public static final double kArmP = 0.85;
-    public static final double kArmI = 0.0;
-    public static final double kArmD = 0.0;
+    public static final double kArmP = .85;
+    public static final double kArmI = 0.00025;
+    public static final double kArmD = 0.025;
     public static final double kArmFF = 0.0;
 
     public static final double kDriveWheelDiameter = 6.0;
