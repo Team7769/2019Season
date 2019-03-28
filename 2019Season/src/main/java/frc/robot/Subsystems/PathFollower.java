@@ -102,7 +102,7 @@ public class PathFollower {
             } else {
                 left_speed = _leftFollower.calculate(_driveTrain.getLeftDistance());
                 right_speed = _rightFollower.calculate(-_driveTrain.getRightDistance());
-                heading = -_driveTrain.getAngle();
+                heading = _driveTrain.getAngle();
                 desired_heading = -Pathfinder.r2d(_leftFollower.getHeading());
                 heading_difference = Pathfinder.boundHalfDegrees(desired_heading - heading);
                 turn =  0.8 * (-1.0/80.0) * heading_difference;

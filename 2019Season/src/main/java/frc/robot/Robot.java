@@ -34,7 +34,7 @@ import frc.robot.Utilities.RobotMap;
  */
 public class Robot extends TimedRobot {
   /**
-   * Version: 1.0
+   * Version: 1.2
    * Team 7769
    */
   private RobotControllerMap _robotControllers;
@@ -101,8 +101,8 @@ public class Robot extends TimedRobot {
       _subsystems.add(_collector);
       _subsystems.add(_hab3);
     }
-    //_driveTrain.setPath("LeftFirstShipHatchClose", false);
-    _driveTrain.setPath("CrossLinePath", false);
+    _driveTrain.setPath("LeftFirstShipHatchClose", false);
+    //_driveTrain.setPath("CrossLinePath", false);
     
   }
 
@@ -171,8 +171,8 @@ public class Robot extends TimedRobot {
         if (_driveTrain.isFinishedFollowingPath()){
           _autonomousCase++;
           _driveTrain.stop();
-          break;
         }
+        break;
       case 2:
         _driveTrain.stop();
         break;
@@ -291,63 +291,110 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     teleopDrive();
-    teleopElevator();
     if (!Constants.kIsTestRobot){
+      teleopElevator();
       teleopCollector();
       if (_driverController.getStartButton() && _driverController.getBackButton() && _operatorController.getStartButton() && _operatorController.getBackButton()){
-        System.out.println("Hab 3");
+        //System.out.println("Hab 3");
         executeHab3();
       }
       if (_driverController.getYButton() && _driverController.getBButton()){
-        System.out.println("Hab 3 Retract");
+        //System.out.println("Hab 3 Retract");
         retractHab3();
       }
     }
   }
+  /**
+   * Starts Hab 3 mechanism. This is the point of no return.
+   */
   public void executeHab3(){
     _hab3.GO();
   }
   public void retractHab3(){
     _hab3.Retract();
   }
+  /**
+   * Teleoperated drive control method. Place in periodic routines with driver control allowed. Drive style is Curvature.
+   */
   public void teleopDrive(){
-    _driveTrain.curvatureDrive(_driverController.getY(Hand.kLeft), _driverController.getX(Hand.kRight), getQuickTurn());
+    if (Math.abs(_driverController.getY(Hand.kLeft)) >= 0.1 || Math.abs(_driverController.getX(Hand.kRight)) >= 0.1){
+      _driveTrain.curvatureDrive(_driverController.getY(Hand.kLeft), _driverController.getX(Hand.kRight), getQuickTurn());
+    } else {
+      _driveTrain.stop();
+    }
   }
-  public boolean getQuickTurn() {
-    return _driverController.getBumper(Hand.kRight);
+  public Boolean getQuickTurn() {
+    return Math.abs(_driverController.getY(Hand.kLeft)) < 0.05; 
   }
+  /**
+   * Method for handling operator control for the elevator/arm mechanism. Place in periodic routines.
+   */
   public void teleopElevator(){
-    if (Math.abs(_operatorController.getY(Hand.kLeft)) > .05
-        || Math.abs(_operatorController.getX(Hand.kRight)) > .05)
+    if (Math.abs(_operatorController.getY(Hand.kLeft)) > .05)
     {
       _manualElevator = true;
-      manualArm(_operatorController.getX(Hand.kRight));
-      manualElevator(_operatorController.getY(Hand.kLeft));
-    } else if (_operatorController.getAButton()){
+    } 
+    
+    armControl();
+  }
+  
+  /**
+   * Submethod for controlling arm and elevator behavior. The two mechanisms are intended to work in tandem, via programmed setpoints. Manual control is activated
+   * by moving either operator joystick, halting autonomous arm/elevator movement.
+   */
+  public void armControl(){
+    double joystick = _operatorController.getX(Hand.kRight);
+    /**
+     * Operator:
+     * Left Bumper: Ground Cargo Pickup
+     * Right Bumper: Cargo Ship Deposit
+     * A Button: Neutral Position (Packaged)
+     * B Button: Low Hatch Level
+     * X Button: Mid Rocket Cargo Angle
+     * Y Button: Low Rocket Cargo Angle
+     * 
+     * Driver:
+     * 
+     * B Button: Set Reversed Positions
+     * A Button: Set Forward Positions
+     */
+    if (_operatorController.getAButton()){
       _manualElevator = false;
-      //_elevator.setPositionLowHatch();
-      _arm.setPositionLowHatch();
+      _elevator.setPositionNeutral();
+      _arm.setPositionNeutral();
     } else if (_operatorController.getBButton()){
       _manualElevator = false;
-      _arm.setPositionNeutral();
-      //_elevator.setPositionMidHatch();
-      //_arm.setPositionMidHatch();
-    } else if (_operatorController.getXButton()){
-      _manualElevator = false;
-      _elevator.setPositionLowCargo();
-      _arm.setPositionLowCargo();
+      _elevator.setPositionLowHatch();
+      _arm.setPositionLowHatch();
     } else if (_operatorController.getYButton()){
       _manualElevator = false;
-      _elevator.setPositionMidCargo();
+      _arm.setPositionLowCargo();
+      _elevator.setPositionLowCargo();
+    } else if (_operatorController.getXButton()){
+      _manualElevator = false;
       _arm.setPositionMidCargo();
+      _elevator.setPositionMidCargo();
     } else if (_operatorController.getBumper(Hand.kRight)){
       _manualElevator = false;
-      _elevator.setPositionTopCargo();
-      _arm.setPositionTopCargo();
-    } else if (_manualElevator){
-      manualElevator(0);
-      manualArm(0);
+      _arm.setPositionCargoShipCargo();
+      _elevator.setPositionCargoShipCargo();
+    } else if (_operatorController.getBumper(Hand.kLeft)){
+      _manualElevator = false;
+      _elevator.setPositionNeutral();
+      _arm.setPositionGround();
+    } else if (Math.abs(joystick) > 0.1){
+      _manualElevator = true;
     }
+    //if (_driverController.getBButton()){
+    //  _arm.setReverse(true);
+    //} else if (_driverController.getAButton()){
+    //  _arm.setReverse(false);
+    //}
+    if (_manualElevator){
+      manualArm(joystick);
+      manualElevator(_operatorController.getY(Hand.kLeft));
+    }
+    SmartDashboard.putBoolean("armStateManual", _manualElevator);
   }
   public void manualElevator(double value){
     _elevator.setSpeed(value);
@@ -356,17 +403,17 @@ public class Robot extends TimedRobot {
     _arm.setSpeed(value);
   }
   public void teleopCollector(){
-    if (Math.abs(_operatorController.getTriggerAxis(Hand.kLeft)) > .05){
-      _collector.setSpeed(-_operatorController.getTriggerAxis(Hand.kLeft));
+    if (Math.abs(_driverController.getTriggerAxis(Hand.kRight)) > .05){
+      _collector.releaseCargo();
     } else if (Math.abs(_operatorController.getTriggerAxis(Hand.kRight)) > .05)
     {
-      _collector.setSpeed(_operatorController.getTriggerAxis(Hand.kRight));
+      _collector.intake();
     } else {
       _collector.setSpeed(0.1);
     }
-    if (Math.abs(_driverController.getTriggerAxis(Hand.kLeft)) > .05){
+    if (_driverController.getBumper(Hand.kLeft)){
       _collector.grabHatch();
-    } else if (Math.abs(_driverController.getTriggerAxis(Hand.kRight)) > .05)
+    } else if (_driverController.getBumper(Hand.kRight))
     {
       _collector.releaseHatch();
     }
@@ -385,7 +432,7 @@ public class Robot extends TimedRobot {
     _autonomousMode = SmartDashboard.getString("autoMode", "0");
     SmartDashboard.putString("autoMode", _autonomousMode);
     _subsystems.forEach((s) -> s.WriteToDashboard());
-    
+
     if (_diagnosticsTimer >= 50){
       _robotMap.PrintDiagnostics();
       _diagnosticsTimer = 0;
@@ -397,7 +444,7 @@ public class Robot extends TimedRobot {
   public void disabledPeriodic() {
     if (!Constants.kIsTestRobot){
       //_elevator.ResetSensors();
-      _arm.ResetSensors();
+      //_arm.ResetSensors();
       _driveTrain.resetEncoders();
       _hab3.Stop();
     }

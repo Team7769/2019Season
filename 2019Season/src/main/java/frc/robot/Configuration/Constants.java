@@ -1,7 +1,8 @@
 package frc.robot.Configuration;
 
-/*
+
 //Test Robot Constants
+/*
 public final class Constants {
 
     //Spark Device ID's
@@ -11,14 +12,15 @@ public final class Constants {
     public static final int kLFDriveId = 5; // Left Front Spark CAN ID
     public static final int kLMDriveId = 6; // Left Middle Spark CAN ID
     public static final int kLRDriveId = 7; // Left Rear Spark CAN ID
-    public static final int kLElevatorId = 8; // Left Elevator Talon CAN ID
+    public static final int kElevatorId = 8; // Left Elevator Talon CAN ID
     public static final int kRElevatorId = 9; // Right Elevator Talon CAN ID
     public static final int kLArmId = 10; // Left Arm Talon CAN ID
     public static final int kRArmId = 11; // Right Arm Talon CAN ID
     public static final int kTCollectorId = 10; // Top Collector Talon CAN ID
     public static final int kBCollectorId = 11; // Bottom Collector Talon CAN ID
-    public static final int kCollectorSolenoidSlot = 0; // Collector Solenoid Slot
-    public static final int kHab3SolenoidSlot = 1; // Hab3 Solenoid Slot
+    public static final int kCollectorSolenoidSlot = 2; // Collector Solenoid Slot
+    public static final int kHab3SolenoidSlotA = 0; // Hab3 Solenoid Slot A
+    public static final int kHab3SolenoidSlotB = 1; // Hab3 Solenoid Slot
 
     //Controller Usb Slots
     public static final int kDriverControllerSlot = 0;
@@ -111,24 +113,27 @@ public final class Constants {
     public static final int kOperatorControllerSlot = 1;
 
     //Elevator Setpoints
-    public static final double kElevatorNeutral = 0;
-    public static final double kElevatorLowHatch = 0;
-    public static final double kElevatorLowCargo = 1;
-    public static final double kElevatorMidHatch = 2;
-    public static final double kElevatorMidCargo = 3;
-    public static final double kElevatorTopCargo = 4;
+    public static final double kElevatorNeutral = -2600;
+    public static final double kElevatorLowHatch = -2600;
+    public static final double kElevatorLowCargo = -2600;
+    public static final double kElevatorCargoShipCargo = -2600;
+    public static final double kElevatorMidHatch = -5400;
+    public static final double kElevatorMidCargo = -5400;
+    public static final double kElevatorTopCargo = 0;
 
     //Arm Setpoints
     public static final double kArmNeutral = 0;
-    public static final double kArmLowHatch = 1050;
-    public static final double kArmLowCargo = 2;
-    public static final double kArmMidHatch = 3;
-    public static final double kArmMidCargo = 4;
-    public static final double kArmTopCargo = 5;
+    public static final double kArmGround = -1285;
+    public static final double kArmLowHatch = -1050;//1050;
+    public static final double kArmCargoShipCargo = -630;
+    public static final double kArmLowCargo = -500;
+    public static final double kArmMidHatch = -1050;
+    public static final double kArmMidCargo = -500;
+    public static final double kArmTopCargo = -500;
 
     //Collector speed
     public static final double kCollectorIntakeSpeed = 0.5;
-    public static final double kCollectorReleaseSpeed = -0.5;
+    public static final double kCollectorReleaseSpeed = -0.25;
 
     //PID Coefficients
     public static final double kDistancePIDP = 0.01;
@@ -149,15 +154,15 @@ public final class Constants {
     public static final double kDriveStraightRotationD = 0.0;
     
     //Elevator
-    public static final double kElevatorP = 0.00025;
+    public static final double kElevatorP = 0.75;
     public static final double kElevatorI = 0.0;
     public static final double kElevatorD = 0.0;
     public static final double kElevatorFF = 0.0;
 
     //Arm
-    public static final double kArmP = 0.00025;
-    public static final double kArmI = 0.0;
-    public static final double kArmD = 0.0;
+    public static final double kArmP = .85;
+    public static final double kArmI = 0.00025;
+    public static final double kArmD = 0.025;
     public static final double kArmFF = 0.0;
 
     public static final double kDriveWheelDiameter = 6.0;
