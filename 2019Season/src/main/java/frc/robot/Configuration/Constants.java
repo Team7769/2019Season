@@ -184,6 +184,7 @@ public final class Constants {
     public static final double kBlinkinSolidRed = 0.61;
     public static final double kBlinkinSolidGreen = 0.77;
     public static final double kBlinkinHeartbeatBlue = -0.23;
+    public static final double kBlinkinFireLarge = -0.57;
     
         
 }

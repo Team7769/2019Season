@@ -61,6 +61,8 @@ public class Robot extends TimedRobot {
   private boolean _autonomousPartTwo;
   private boolean _sandstormOverride;
   private boolean _manualElevator;
+  private double _ledTest;
+  private boolean _hatchExtended;
 
   @Override
   public void robotInit() {
@@ -86,6 +88,8 @@ public class Robot extends TimedRobot {
     _sandstormOverride = true; //Not running autonomous
     _manualElevator = false;
     _diagnosticsTimer = 0;
+    _ledTest = Constants.kBlinkinSolidRed;
+    _hatchExtended = false;
     
     _elevator = new Elevator(_robotMap.getElevatorTalon());
     _subsystems.add(_elevator);
@@ -299,6 +303,7 @@ public class Robot extends TimedRobot {
       teleopCollector();
       if (_driverController.getStartButton() && _driverController.getBackButton() && _operatorController.getStartButton() && _operatorController.getBackButton()){
         //System.out.println("Hab 3");
+        _blinkin.set(Constants.kBlinkinFireLarge);
         executeHab3();
       }
       if (_driverController.getYButton() && _driverController.getBButton()){
@@ -436,6 +441,7 @@ public class Robot extends TimedRobot {
       teleopCollector();
       if (_driverController.getStartButton() && _driverController.getBackButton() && _operatorController.getStartButton() && _operatorController.getBackButton()){
         //System.out.println("Hab 3");
+        _blinkin.set(Constants.kBlinkinColorWavesOcean);
         executeHab3();
       }
       if (_driverController.getYButton() && _driverController.getBButton()){
@@ -453,6 +459,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic(){
+    _ledTest = SmartDashboard.getNumber("ledTest", _ledTest);
+    SmartDashboard.putNumber("ledTest", _ledTest);
     _autonomousMode = SmartDashboard.getString("autoMode", "0");
     SmartDashboard.putString("autoMode", _autonomousMode);
     _subsystems.forEach((s) -> s.WriteToDashboard());
