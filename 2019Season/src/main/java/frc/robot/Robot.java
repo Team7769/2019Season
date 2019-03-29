@@ -320,7 +320,7 @@ public class Robot extends TimedRobot {
    * Teleoperated drive control method. Place in periodic routines with driver control allowed. Drive style is Curvature.
    */
   public void teleopDrive(){
-    if (Math.abs(_driverController.getY(Hand.kLeft)) >= 0.1 || Math.abs(_driverController.getX(Hand.kRight)) >= 0.1){
+    if (Math.abs(_driverController.getY(Hand.kLeft)) >= 0.075 || Math.abs(_driverController.getX(Hand.kRight)) >= 0.075){
       _driveTrain.curvatureDrive(_driverController.getY(Hand.kLeft), _driverController.getX(Hand.kRight), getQuickTurn());
     } else {
       _driveTrain.stop();
