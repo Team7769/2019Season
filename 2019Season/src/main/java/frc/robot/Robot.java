@@ -81,7 +81,7 @@ public class Robot extends TimedRobot {
     _autonomousStartZone = Constants.kAutonomousZoneHab1;
     _autonomousStartPosition = Constants.kAutonomousPositionLeft;
     _autonomousPartTwo = false;
-    _sandstormOverride = false;
+    _sandstormOverride = true; //Not running autonomous
     _manualElevator = false;
     _diagnosticsTimer = 0;
     
@@ -317,7 +317,7 @@ public class Robot extends TimedRobot {
    * Teleoperated drive control method. Place in periodic routines with driver control allowed. Drive style is Curvature.
    */
   public void teleopDrive(){
-    if (Math.abs(_driverController.getY(Hand.kLeft)) >= 0.1 || Math.abs(_driverController.getX(Hand.kRight)) >= 0.1){
+    if (Math.abs(_driverController.getY(Hand.kLeft)) >= 0.05 || Math.abs(_driverController.getX(Hand.kRight)) >= 0.05){
       _driveTrain.curvatureDrive(_driverController.getY(Hand.kLeft), _driverController.getX(Hand.kRight), getQuickTurn());
     } else {
       _driveTrain.stop();
@@ -371,9 +371,9 @@ public class Robot extends TimedRobot {
       _arm.setPositionLowCargo();
       _elevator.setPositionLowCargo();
     } else if (_operatorController.getXButton()){
-      _manualElevator = false;
-      _arm.setPositionMidCargo();
-      _elevator.setPositionMidCargo();
+      //_manualElevator = false;
+      //_arm.setPositionMidCargo();
+      //_elevator.setPositionMidCargo();
     } else if (_operatorController.getBumper(Hand.kRight)){
       _manualElevator = false;
       _arm.setPositionCargoShipCargo();
@@ -425,6 +425,25 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testPeriodic() {
+    teleopDrive();
+    if (!Constants.kIsTestRobot){
+      teleopElevator();
+      teleopCollector();
+      if (_driverController.getStartButton() && _driverController.getBackButton() && _operatorController.getStartButton() && _operatorController.getBackButton()){
+        //System.out.println("Hab 3");
+        executeHab3();
+      }
+      if (_driverController.getYButton() && _driverController.getBButton()){
+        //System.out.println("Hab 3 Retract");
+        retractHab3();
+      }
+
+      if (_driverController.getXButton()){
+        _elevator.ResetSensors();
+        _arm.ResetSensors();
+        _driveTrain.resetEncoders();
+      }
+    }
   }
 
   @Override
