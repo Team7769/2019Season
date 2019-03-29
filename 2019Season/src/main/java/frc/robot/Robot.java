@@ -10,6 +10,7 @@ package frc.robot;
 import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -47,6 +48,7 @@ public class Robot extends TimedRobot {
   private XboxController _driverController;
   private XboxController _operatorController;
   private Compressor _compressor;
+  private Spark _blinkin;
 
   private ArrayList<Subsystem> _subsystems;
   private int _timer;
@@ -94,6 +96,7 @@ public class Robot extends TimedRobot {
       _collector = new Collector(_robotMap.getTopCollectorTalon(), _robotMap.getBottomCollectorTalon(), 
                                  _robotMap.getCollectorSolenoid());
       _compressor = new Compressor();
+      _blinkin = _robotMap.getBlinkin();
 
       _compressor.start();
       _subsystems.add(_collector);
@@ -317,7 +320,7 @@ public class Robot extends TimedRobot {
    * Teleoperated drive control method. Place in periodic routines with driver control allowed. Drive style is Curvature.
    */
   public void teleopDrive(){
-    if (Math.abs(_driverController.getY(Hand.kLeft)) >= 0.05 || Math.abs(_driverController.getX(Hand.kRight)) >= 0.05){
+    if (Math.abs(_driverController.getY(Hand.kLeft)) >= 0.1 || Math.abs(_driverController.getX(Hand.kRight)) >= 0.1){
       _driveTrain.curvatureDrive(_driverController.getY(Hand.kLeft), _driverController.getX(Hand.kRight), getQuickTurn());
     } else {
       _driveTrain.stop();
@@ -412,9 +415,11 @@ public class Robot extends TimedRobot {
       _collector.setSpeed(0.1);
     }
     if (_driverController.getBumper(Hand.kLeft)){
+      _blinkin.set(Constants.kBlinkinSolidRed);
       _collector.grabHatch();
     } else if (_driverController.getBumper(Hand.kRight))
     {
+      _blinkin.set(Constants.kBlinkinSolidGreen);
       _collector.releaseHatch();
     }
   }
