@@ -301,7 +301,7 @@ public class Robot extends TimedRobot {
     if (!Constants.kIsTestRobot){
       teleopElevator();
       teleopCollector();
-      if (_driverController.getStartButton() && _driverController.getBackButton() && _operatorController.getStartButton() && _operatorController.getBackButton()){
+      if (_driverController.getStartButton() && _driverController.getBackButton()){
         //System.out.println("Hab 3");
         _blinkin.set(Constants.kBlinkinFireLarge);
         executeHab3();
@@ -325,8 +325,9 @@ public class Robot extends TimedRobot {
    * Teleoperated drive control method. Place in periodic routines with driver control allowed. Drive style is Curvature.
    */
   public void teleopDrive(){
-    if (Math.abs(_driverController.getY(Hand.kLeft)) >= 0.075 || Math.abs(_driverController.getX(Hand.kRight)) >= 0.075){
-      _driveTrain.curvatureDrive(_driverController.getY(Hand.kLeft), _driverController.getX(Hand.kRight), getQuickTurn());
+    if (Math.abs(_driverController.getY(Hand.kLeft)) >= 0.05 || Math.abs(_driverController.getX(Hand.kRight)) >= 0.05){
+      //_driveTrain.curvatureDrive(_driverController.getY(Hand.kLeft), _driverController.getX(Hand.kRight), getQuickTurn());
+      _driveTrain.arcadeDrive(_driverController.getY(Hand.kLeft), _driverController.getX(Hand.kRight));
     } else {
       _driveTrain.stop();
     }
@@ -379,9 +380,17 @@ public class Robot extends TimedRobot {
       _arm.setPositionLowCargo();
       _elevator.setPositionLowCargo();
     } else if (_operatorController.getXButton()){
-      //_manualElevator = false;
-      //_arm.setPositionMidCargo();
-      //_elevator.setPositionMidCargo();
+      _manualElevator = false;
+      _arm.setPositionMidHatch();
+      _elevator.setPositionMidHatch();
+    } else if (_operatorController.getStartButton()){
+      _manualElevator = false;
+      _arm.setPositionTopCargo();
+      _elevator.setPositionTopCargo();
+    }else if (Math.abs(_operatorController.getTriggerAxis(Hand.kLeft)) > 0.05){
+      _manualElevator = false;
+      _arm.setPositionMidCargo();
+      _elevator.setPositionMidCargo();
     } else if (_operatorController.getBumper(Hand.kRight)){
       _manualElevator = false;
       _arm.setPositionCargoShipCargo();

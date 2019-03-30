@@ -118,9 +118,9 @@ public final class Constants {
     public static final double kElevatorLowHatch = -2600;
     public static final double kElevatorLowCargo = -2600;
     public static final double kElevatorCargoShipCargo = -2600;
-    public static final double kElevatorMidHatch = -10400;
-    public static final double kElevatorMidCargo = -10400;
-    public static final double kElevatorTopCargo = 0;
+    public static final double kElevatorMidHatch = -26800;
+    public static final double kElevatorMidCargo = -26800;
+    public static final double kElevatorTopCargo = -26800;
 
     //Arm Setpoints
     public static final double kArmNeutral = 0;
@@ -129,8 +129,8 @@ public final class Constants {
     public static final double kArmCargoShipCargo = -500;
     public static final double kArmLowCargo = -880;
     public static final double kArmMidHatch = -1050;
-    public static final double kArmMidCargo = -880;
-    public static final double kArmTopCargo = -500;
+    public static final double kArmMidCargo = -810;
+    public static final double kArmTopCargo = -370;
 
     //Collector speed
     public static final double kCollectorIntakeSpeed = 0.5;
