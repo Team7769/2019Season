@@ -10,6 +10,7 @@ package frc.robot;
 import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -47,6 +48,7 @@ public class Robot extends TimedRobot {
   private XboxController _driverController;
   private XboxController _operatorController;
   private Compressor _compressor;
+  private Spark _blinkin;
 
   private ArrayList<Subsystem> _subsystems;
   private int _timer;
@@ -59,6 +61,8 @@ public class Robot extends TimedRobot {
   private boolean _autonomousPartTwo;
   private boolean _sandstormOverride;
   private boolean _manualElevator;
+  private double _ledTest;
+  private boolean _hatchExtended;
 
   @Override
   public void robotInit() {
@@ -81,9 +85,11 @@ public class Robot extends TimedRobot {
     _autonomousStartZone = Constants.kAutonomousZoneHab1;
     _autonomousStartPosition = Constants.kAutonomousPositionLeft;
     _autonomousPartTwo = false;
-    _sandstormOverride = false;
+    _sandstormOverride = true; //Not running autonomous
     _manualElevator = false;
     _diagnosticsTimer = 0;
+    _ledTest = Constants.kBlinkinSolidRed;
+    _hatchExtended = false;
     
     _elevator = new Elevator(_robotMap.getElevatorTalon());
     _subsystems.add(_elevator);
@@ -94,6 +100,7 @@ public class Robot extends TimedRobot {
       _collector = new Collector(_robotMap.getTopCollectorTalon(), _robotMap.getBottomCollectorTalon(), 
                                  _robotMap.getCollectorSolenoid());
       _compressor = new Compressor();
+      _blinkin = _robotMap.getBlinkin();
 
       _compressor.start();
       _subsystems.add(_collector);
@@ -294,8 +301,9 @@ public class Robot extends TimedRobot {
     if (!Constants.kIsTestRobot){
       teleopElevator();
       teleopCollector();
-      if (_driverController.getStartButton() && _driverController.getBackButton() && _operatorController.getStartButton() && _operatorController.getBackButton()){
+      if (_driverController.getStartButton() && _driverController.getBackButton()){
         //System.out.println("Hab 3");
+        _blinkin.set(Constants.kBlinkinFireLarge);
         executeHab3();
       }
       if (_driverController.getYButton() && _driverController.getBButton()){
@@ -317,8 +325,9 @@ public class Robot extends TimedRobot {
    * Teleoperated drive control method. Place in periodic routines with driver control allowed. Drive style is Curvature.
    */
   public void teleopDrive(){
-    if (Math.abs(_driverController.getY(Hand.kLeft)) >= 0.1 || Math.abs(_driverController.getX(Hand.kRight)) >= 0.1){
-      _driveTrain.curvatureDrive(_driverController.getY(Hand.kLeft), _driverController.getX(Hand.kRight), getQuickTurn());
+    if (Math.abs(_driverController.getY(Hand.kLeft)) >= 0.05 || Math.abs(_driverController.getX(Hand.kRight)) >= 0.05){
+      //_driveTrain.curvatureDrive(_driverController.getY(Hand.kLeft), _driverController.getX(Hand.kRight), getQuickTurn());
+      _driveTrain.arcadeDrive(_driverController.getY(Hand.kLeft), _driverController.getX(Hand.kRight));
     } else {
       _driveTrain.stop();
     }
@@ -372,6 +381,14 @@ public class Robot extends TimedRobot {
       _elevator.setPositionLowCargo();
     } else if (_operatorController.getXButton()){
       _manualElevator = false;
+      _arm.setPositionMidHatch();
+      _elevator.setPositionMidHatch();
+    } else if (_operatorController.getStartButton()){
+      _manualElevator = false;
+      _arm.setPositionTopCargo();
+      _elevator.setPositionTopCargo();
+    }else if (Math.abs(_operatorController.getTriggerAxis(Hand.kLeft)) > 0.05){
+      _manualElevator = false;
       _arm.setPositionMidCargo();
       _elevator.setPositionMidCargo();
     } else if (_operatorController.getBumper(Hand.kRight)){
@@ -412,9 +429,11 @@ public class Robot extends TimedRobot {
       _collector.setSpeed(0.1);
     }
     if (_driverController.getBumper(Hand.kLeft)){
+      _blinkin.set(Constants.kBlinkinSolidRed);
       _collector.grabHatch();
     } else if (_driverController.getBumper(Hand.kRight))
     {
+      _blinkin.set(Constants.kBlinkinSolidGreen);
       _collector.releaseHatch();
     }
   }
@@ -425,10 +444,32 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testPeriodic() {
+    teleopDrive();
+    if (!Constants.kIsTestRobot){
+      teleopElevator();
+      teleopCollector();
+      if (_driverController.getStartButton() && _driverController.getBackButton() && _operatorController.getStartButton() && _operatorController.getBackButton()){
+        //System.out.println("Hab 3");
+        _blinkin.set(Constants.kBlinkinColorWavesOcean);
+        executeHab3();
+      }
+      if (_driverController.getYButton() && _driverController.getBButton()){
+        //System.out.println("Hab 3 Retract");
+        retractHab3();
+      }
+
+      if (_driverController.getXButton()){
+        _elevator.ResetSensors();
+        _arm.ResetSensors();
+        _driveTrain.resetEncoders();
+      }
+    }
   }
 
   @Override
   public void robotPeriodic(){
+    _ledTest = SmartDashboard.getNumber("ledTest", _ledTest);
+    SmartDashboard.putNumber("ledTest", _ledTest);
     _autonomousMode = SmartDashboard.getString("autoMode", "0");
     SmartDashboard.putString("autoMode", _autonomousMode);
     _subsystems.forEach((s) -> s.WriteToDashboard());

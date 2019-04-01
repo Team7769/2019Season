@@ -7,6 +7,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Configuration.*;
@@ -29,6 +30,7 @@ public class RobotMap {
     private Solenoid _collectorSolenoid;
     private DoubleSolenoid _hab3Solenoid;
     private AHRS _gyro;
+    private Spark _blinkin;
 
     public RobotMap(){
         try {
@@ -68,6 +70,7 @@ public class RobotMap {
             _bottomCollector = new TalonSRX(Constants.kBCollectorId);
             _collectorSolenoid = new Solenoid(Constants.kCollectorSolenoidSlot);
             _hab3Solenoid = new DoubleSolenoid(Constants.kHab3SolenoidSlotA, Constants.kHab3SolenoidSlotB);
+            _blinkin = new Spark(Constants.kBlinkinSlot);
         }
         
         System.out.println("Created Robot Map");
@@ -102,6 +105,9 @@ public class RobotMap {
     }
     public AHRS getGyro(){
         return _gyro;
+    }
+    public Spark getBlinkin(){
+        return _blinkin;
     }
     public void PrintDiagnostics(){
         //System.out.println("Temp - LF: " + _lfDrive.getMotorTemperature() + " LM: " + _lmDrive.getMotorTemperature() + " LR: " + _lrDrive.getMotorTemperature());
