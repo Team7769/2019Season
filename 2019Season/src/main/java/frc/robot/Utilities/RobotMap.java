@@ -45,11 +45,11 @@ public class RobotMap {
 
             _rfDrive = new CANSparkMax(Constants.kRFDriveId, MotorType.kBrushless);
             _rfDrive.setSmartCurrentLimit(40);
-            _rfDrive.setOpenLoopRampRate(.14);
+            _rfDrive.setOpenLoopRampRate(.2);
 
             _rrDrive = new CANSparkMax(Constants.kRRDriveId, MotorType.kBrushless);
             _rrDrive.setSmartCurrentLimit(40);
-            _rrDrive.setOpenLoopRampRate(.14);
+            _rrDrive.setOpenLoopRampRate(.2);
 
             _elevator = new TalonSRX(Constants.kElevatorId);
             _gyro = new AHRS(Port.kMXP);
