@@ -100,7 +100,7 @@ public class Robot extends TimedRobot {
     _subsystems.add(_elevator);
 
     if (!Constants.kIsTestRobot){
-      _hab3 = new Hab3(_robotMap.getHab3Solenoid());
+      _hab3 = new Hab3(_robotMap.getHab3SolenoidLeft(), _robotMap.getHab3SolenoidRight());
       _arm = new Arm(_robotMap.getLeftArmTalon(), _robotMap.getRightArmTalon());
       _collector = new Collector(_robotMap.getTopCollectorTalon(), _robotMap.getBottomCollectorTalon(), 
                                  _robotMap.getCollectorSolenoid());

@@ -28,7 +28,8 @@ public class RobotMap {
     private TalonSRX _topCollector;
     private TalonSRX _bottomCollector;
     private Solenoid _collectorSolenoid;
-    private DoubleSolenoid _hab3Solenoid;
+    private DoubleSolenoid _hab3SolenoidLeft;
+    private DoubleSolenoid _hab3SolenoidRight;
     private AHRS _gyro;
     private Spark _blinkin;
 
@@ -69,7 +70,8 @@ public class RobotMap {
             _topCollector = new TalonSRX(Constants.kTCollectorId);
             _bottomCollector = new TalonSRX(Constants.kBCollectorId);
             _collectorSolenoid = new Solenoid(Constants.kCollectorSolenoidSlot);
-            _hab3Solenoid = new DoubleSolenoid(Constants.kHab3SolenoidSlotA, Constants.kHab3SolenoidSlotB);
+            _hab3SolenoidLeft = new DoubleSolenoid(Constants.kHab3SolenoidSlotA, Constants.kHab3SolenoidSlotB);
+            _hab3SolenoidRight = new DoubleSolenoid(Constants.kHab3SolenoidSlotC, Constants.kHab3SolenoidSlotD);
             _blinkin = new Spark(Constants.kBlinkinSlot);
         }
         
@@ -100,8 +102,11 @@ public class RobotMap {
     public Solenoid getCollectorSolenoid(){
         return _collectorSolenoid;
     }
-    public DoubleSolenoid getHab3Solenoid(){
-        return _hab3Solenoid;
+    public DoubleSolenoid getHab3SolenoidLeft(){
+        return _hab3SolenoidLeft;
+    }
+    public DoubleSolenoid getHab3SolenoidRight(){
+        return _hab3SolenoidRight;
     }
     public AHRS getGyro(){
         return _gyro;
