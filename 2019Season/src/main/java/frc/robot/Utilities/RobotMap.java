@@ -28,7 +28,8 @@ public class RobotMap {
     private TalonSRX _topCollector;
     private TalonSRX _bottomCollector;
     private Solenoid _collectorSolenoid;
-    private DoubleSolenoid _hab3Solenoid;
+    private DoubleSolenoid _hab3SolenoidLeft;
+    private DoubleSolenoid _hab3SolenoidRight;
     private AHRS _gyro;
     private Spark _blinkin;
 
@@ -36,20 +37,20 @@ public class RobotMap {
         try {
             _lfDrive = new CANSparkMax(Constants.kLFDriveId, MotorType.kBrushless);
             _lfDrive.setSmartCurrentLimit(40);
-            _lfDrive.setOpenLoopRampRate(.14);
+            _lfDrive.setOpenLoopRampRate(.5);
             
             _lrDrive = new CANSparkMax(Constants.kLRDriveId, MotorType.kBrushless);
             _lrDrive.setSmartCurrentLimit(40);
-            _lrDrive.setOpenLoopRampRate(.14);
+            _lrDrive.setOpenLoopRampRate(.5);
             _lrDrive.follow(_lfDrive);
 
             _rfDrive = new CANSparkMax(Constants.kRFDriveId, MotorType.kBrushless);
             _rfDrive.setSmartCurrentLimit(40);
-            _rfDrive.setOpenLoopRampRate(.14);
+            _rfDrive.setOpenLoopRampRate(.5);
 
             _rrDrive = new CANSparkMax(Constants.kRRDriveId, MotorType.kBrushless);
             _rrDrive.setSmartCurrentLimit(40);
-            _rrDrive.setOpenLoopRampRate(.14);
+            _rrDrive.setOpenLoopRampRate(.5);
 
             _elevator = new TalonSRX(Constants.kElevatorId);
             _gyro = new AHRS(Port.kMXP);
@@ -59,9 +60,13 @@ public class RobotMap {
         }
         if (!Constants.kIsTestRobot){
             _lmDrive = new CANSparkMax(Constants.kLMDriveId, MotorType.kBrushless);
+            _lmDrive.setSmartCurrentLimit(40);
+            _lmDrive.setOpenLoopRampRate(.5);
             _lmDrive.follow(_lfDrive);
             
             _rmDrive = new CANSparkMax(Constants.kRMDriveId, MotorType.kBrushless);
+            _rrDrive.setSmartCurrentLimit(40);
+            _rrDrive.setOpenLoopRampRate(.5);
             _rmDrive.follow(_rfDrive);
 
             _leftArm = new TalonSRX(Constants.kLArmId);
@@ -69,7 +74,8 @@ public class RobotMap {
             _topCollector = new TalonSRX(Constants.kTCollectorId);
             _bottomCollector = new TalonSRX(Constants.kBCollectorId);
             _collectorSolenoid = new Solenoid(Constants.kCollectorSolenoidSlot);
-            _hab3Solenoid = new DoubleSolenoid(Constants.kHab3SolenoidSlotA, Constants.kHab3SolenoidSlotB);
+            _hab3SolenoidLeft = new DoubleSolenoid(Constants.kHab3SolenoidSlotA, Constants.kHab3SolenoidSlotB);
+            _hab3SolenoidRight = new DoubleSolenoid(Constants.kHab3SolenoidSlotC, Constants.kHab3SolenoidSlotD);
             _blinkin = new Spark(Constants.kBlinkinSlot);
         }
         
@@ -100,8 +106,11 @@ public class RobotMap {
     public Solenoid getCollectorSolenoid(){
         return _collectorSolenoid;
     }
-    public DoubleSolenoid getHab3Solenoid(){
-        return _hab3Solenoid;
+    public DoubleSolenoid getHab3SolenoidLeft(){
+        return _hab3SolenoidLeft;
+    }
+    public DoubleSolenoid getHab3SolenoidRight(){
+        return _hab3SolenoidRight;
     }
     public AHRS getGyro(){
         return _gyro;
