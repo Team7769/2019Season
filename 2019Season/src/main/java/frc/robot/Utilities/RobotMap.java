@@ -37,20 +37,20 @@ public class RobotMap {
         try {
             _lfDrive = new CANSparkMax(Constants.kLFDriveId, MotorType.kBrushless);
             _lfDrive.setSmartCurrentLimit(40);
-            _lfDrive.setOpenLoopRampRate(.3);
+            _lfDrive.setOpenLoopRampRate(.5);
             
             _lrDrive = new CANSparkMax(Constants.kLRDriveId, MotorType.kBrushless);
             _lrDrive.setSmartCurrentLimit(40);
-            _lrDrive.setOpenLoopRampRate(.3);
+            _lrDrive.setOpenLoopRampRate(.5);
             _lrDrive.follow(_lfDrive);
 
             _rfDrive = new CANSparkMax(Constants.kRFDriveId, MotorType.kBrushless);
             _rfDrive.setSmartCurrentLimit(40);
-            _rfDrive.setOpenLoopRampRate(.3);
+            _rfDrive.setOpenLoopRampRate(.5);
 
             _rrDrive = new CANSparkMax(Constants.kRRDriveId, MotorType.kBrushless);
             _rrDrive.setSmartCurrentLimit(40);
-            _rrDrive.setOpenLoopRampRate(.3);
+            _rrDrive.setOpenLoopRampRate(.5);
 
             _elevator = new TalonSRX(Constants.kElevatorId);
             _gyro = new AHRS(Port.kMXP);
@@ -61,12 +61,12 @@ public class RobotMap {
         if (!Constants.kIsTestRobot){
             _lmDrive = new CANSparkMax(Constants.kLMDriveId, MotorType.kBrushless);
             _lmDrive.setSmartCurrentLimit(40);
-            _lmDrive.setOpenLoopRampRate(.3);
+            _lmDrive.setOpenLoopRampRate(.5);
             _lmDrive.follow(_lfDrive);
             
             _rmDrive = new CANSparkMax(Constants.kRMDriveId, MotorType.kBrushless);
             _rrDrive.setSmartCurrentLimit(40);
-            _rrDrive.setOpenLoopRampRate(.3);
+            _rrDrive.setOpenLoopRampRate(.5);
             _rmDrive.follow(_rfDrive);
 
             _leftArm = new TalonSRX(Constants.kLArmId);
