@@ -106,7 +106,9 @@ public final class Constants {
     public static final int kBCollectorId = 12; // Bottom Collector Talon CAN ID
     public static final int kCollectorSolenoidSlot = 2; // Collector Solenoid Slot
     public static final int kHab3SolenoidSlotA = 0; // Hab3 Solenoid Slot A
-    public static final int kHab3SolenoidSlotB = 1; // Hab3 Solenoid Slot
+    public static final int kHab3SolenoidSlotB = 1; // Hab3 Solenoid Slot B
+    public static final int kHab3SolenoidSlotC = 6;
+    public static final int kHab3SolenoidSlotD = 7;
     public static final int kBlinkinSlot = 0;
 
     //Controller Usb Slots

@@ -9,6 +9,8 @@ package frc.robot;
 
 import java.util.ArrayList;
 
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -49,6 +51,7 @@ public class Robot extends TimedRobot {
   private XboxController _operatorController;
   private Compressor _compressor;
   private Spark _blinkin;
+  private UsbCamera _camera;
 
   private ArrayList<Subsystem> _subsystems;
   private int _timer;
@@ -63,6 +66,7 @@ public class Robot extends TimedRobot {
   private boolean _manualElevator;
   private double _ledTest;
   private boolean _hatchExtended;
+  private double _slowSpeed;
 
   @Override
   public void robotInit() {
@@ -90,17 +94,20 @@ public class Robot extends TimedRobot {
     _diagnosticsTimer = 0;
     _ledTest = Constants.kBlinkinSolidRed;
     _hatchExtended = false;
+    _slowSpeed = .55;
     
     _elevator = new Elevator(_robotMap.getElevatorTalon());
     _subsystems.add(_elevator);
 
     if (!Constants.kIsTestRobot){
-      _hab3 = new Hab3(_robotMap.getHab3Solenoid());
+      _hab3 = new Hab3(_robotMap.getHab3SolenoidLeft(), _robotMap.getHab3SolenoidRight());
       _arm = new Arm(_robotMap.getLeftArmTalon(), _robotMap.getRightArmTalon());
       _collector = new Collector(_robotMap.getTopCollectorTalon(), _robotMap.getBottomCollectorTalon(), 
                                  _robotMap.getCollectorSolenoid());
       _compressor = new Compressor();
       _blinkin = _robotMap.getBlinkin();
+
+      _camera = CameraServer.getInstance().startAutomaticCapture();
 
       _compressor.start();
       _subsystems.add(_collector);
@@ -115,6 +122,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+    _blinkin.set(Constants.kBlinkinHeartbeatBlue);
     _autonomousCase = 0;
     _subsystems.forEach((s) -> s.ResetSensors());
     _driveTrain.resetEncoders();
@@ -325,9 +333,17 @@ public class Robot extends TimedRobot {
    * Teleoperated drive control method. Place in periodic routines with driver control allowed. Drive style is Curvature.
    */
   public void teleopDrive(){
-    if (Math.abs(_driverController.getY(Hand.kLeft)) >= 0.05 || Math.abs(_driverController.getX(Hand.kRight)) >= 0.05){
+    double throttleDemand = _driverController.getY(Hand.kLeft);
+    double turnDemand = _driverController.getX(Hand.kRight);
+    boolean slowMode = _driverController.getBumper(Hand.kRight);
+
+    if (Math.abs(throttleDemand) >= 0.05 || Math.abs(turnDemand) >= 0.05){
       //_driveTrain.curvatureDrive(_driverController.getY(Hand.kLeft), _driverController.getX(Hand.kRight), getQuickTurn());
-      _driveTrain.arcadeDrive(_driverController.getY(Hand.kLeft), _driverController.getX(Hand.kRight));
+      if (slowMode){
+        _driveTrain.arcadeDrive(throttleDemand * _slowSpeed, turnDemand * _slowSpeed);
+      } else {        
+        _driveTrain.arcadeDrive(throttleDemand, turnDemand);
+      }
     } else {
       _driveTrain.stop();
     }
@@ -431,7 +447,7 @@ public class Robot extends TimedRobot {
     if (_driverController.getBumper(Hand.kLeft)){
       _blinkin.set(Constants.kBlinkinSolidRed);
       _collector.grabHatch();
-    } else if (_driverController.getBumper(Hand.kRight))
+    } else if (Math.abs(_driverController.getTriggerAxis(Hand.kLeft)) > .05)
     {
       _blinkin.set(Constants.kBlinkinSolidGreen);
       _collector.releaseHatch();
