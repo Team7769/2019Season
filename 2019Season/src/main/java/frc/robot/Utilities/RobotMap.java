@@ -38,7 +38,7 @@ public class RobotMap {
             _lfDrive = new CANSparkMax(Constants.kLFDriveId, MotorType.kBrushless);
             _lfDrive.setSmartCurrentLimit(40);
             _lfDrive.setOpenLoopRampRate(.5);
-            
+                        
             _lrDrive = new CANSparkMax(Constants.kLRDriveId, MotorType.kBrushless);
             _lrDrive.setSmartCurrentLimit(40);
             _lrDrive.setOpenLoopRampRate(.5);

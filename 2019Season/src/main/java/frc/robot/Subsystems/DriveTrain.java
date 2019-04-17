@@ -8,6 +8,9 @@ import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -35,6 +38,9 @@ public class DriveTrain implements Subsystem {
     private double _targetDistanceRight;
     private double _targetAngle;
     private double _tolerance;
+
+    private NetworkTable _table = NetworkTableInstance.getDefault().getTable("limelight");
+    private NetworkTableEntry _angleEntry = _table.getEntry("tx");
 
     public DriveTrain(CANSparkMax leftMotor, CANSparkMax rightMotor, AHRS gyro){
         try {
@@ -197,6 +203,14 @@ public class DriveTrain implements Subsystem {
         _rotationPID.setSetpoint(angle);
         _rotationPID.enable();
     }
+
+    public void turnViaCamera()
+    {
+        double angleOffset = _angleEntry.getDouble(0.0);
+
+        turnToAngle(_gyro.getYaw() + angleOffset);
+    }
+    
     public boolean isAngleOnTarget(){
         if (Math.abs(_targetAngle - _gyro.getAngle()) < Constants.kDriveRotationTolerance && (Math.abs(_rotationPID.get()) < .35)){
             return true;
@@ -296,5 +310,19 @@ public class DriveTrain implements Subsystem {
     public boolean isFinishedFollowingPath(){
         return _pathFollower.isFinished();
     }
+
+    public boolean isPIDEnabled()
+    {
+        return _pidEnabled;
+    }
+
+    public void disableRotationPID()
+    {
+        if(_rotationPID.isEnabled()){ 
+            _rotationPID.disable();
+            _pidEnabled = false;
+         }   
+    }
+
 
 }

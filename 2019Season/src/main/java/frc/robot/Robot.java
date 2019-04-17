@@ -337,16 +337,23 @@ public class Robot extends TimedRobot {
     double turnDemand = _driverController.getX(Hand.kRight);
     boolean slowMode = _driverController.getBumper(Hand.kRight);
 
+    if(_driverController.getAButtonPressed())
+    {
+      _driveTrain.turnViaCamera();
+    }
+
     if (Math.abs(throttleDemand) >= 0.05 || Math.abs(turnDemand) >= 0.05){
+      _driveTrain.disableRotationPID();
       //_driveTrain.curvatureDrive(_driverController.getY(Hand.kLeft), _driverController.getX(Hand.kRight), getQuickTurn());
       if (slowMode){
         _driveTrain.arcadeDrive(throttleDemand * _slowSpeed, turnDemand * _slowSpeed);
       } else {        
         _driveTrain.arcadeDrive(throttleDemand, turnDemand);
       }
-    } else {
+    } else if(!_driveTrain.isPIDEnabled()) {
       _driveTrain.stop();
     }
+  
   }
   public Boolean getQuickTurn() {
     return Math.abs(_driverController.getY(Hand.kLeft)) < 0.05; 
