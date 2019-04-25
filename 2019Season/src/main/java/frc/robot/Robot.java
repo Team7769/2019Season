@@ -11,6 +11,9 @@ import java.util.ArrayList;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -67,6 +70,9 @@ public class Robot extends TimedRobot {
   private double _ledTest;
   private boolean _hatchExtended;
   private double _slowSpeed;
+  private NetworkTable _networkTable;
+  private NetworkTableEntry _cameraModeEntry;
+  private double _cameraMode;
 
   @Override
   public void robotInit() {
@@ -95,6 +101,9 @@ public class Robot extends TimedRobot {
     _ledTest = Constants.kBlinkinSolidRed;
     _hatchExtended = false;
     _slowSpeed = .55;
+    _networkTable = NetworkTableInstance.getDefault().getTable("limelight");
+    _cameraModeEntry = _networkTable.getEntry("camMode");
+    _cameraMode = 1;
     
     _elevator = new Elevator(_robotMap.getElevatorTalon());
     _subsystems.add(_elevator);
@@ -336,13 +345,22 @@ public class Robot extends TimedRobot {
     double throttleDemand = _driverController.getY(Hand.kLeft);
     double turnDemand = _driverController.getX(Hand.kRight);
     boolean slowMode = _driverController.getBumper(Hand.kRight);
+    
+    //_driveTrain.trackVision();
 
-    if(_driverController.getAButtonPressed())
+    if(_driverController.getAButton())
     {
+      _cameraModeEntry.setDouble(0);
       _driveTrain.turnViaCamera();
-    }
+      //_driveTrain.enableVision();
+    } 
+    //else {
+    //  _driveTrain.disableVision();
+    //}
 
     if (Math.abs(throttleDemand) >= 0.05 || Math.abs(turnDemand) >= 0.05){
+      //_cameraMode = 1;
+
       _driveTrain.disableRotationPID();
       //_driveTrain.curvatureDrive(_driverController.getY(Hand.kLeft), _driverController.getX(Hand.kRight), getQuickTurn());
       if (slowMode){
@@ -350,7 +368,10 @@ public class Robot extends TimedRobot {
       } else {        
         _driveTrain.arcadeDrive(throttleDemand, turnDemand);
       }
-    } else if(!_driveTrain.isPIDEnabled()) {
+    } //else if(_driveTrain.isVisionEnabled())
+    //{
+    //  _driveTrain.arcadeDrive(0, 0);
+    else if (!_driveTrain.isPIDEnabled()) {
       _driveTrain.stop();
     }
   
@@ -496,6 +517,7 @@ public class Robot extends TimedRobot {
     _autonomousMode = SmartDashboard.getString("autoMode", "0");
     SmartDashboard.putString("autoMode", _autonomousMode);
     _subsystems.forEach((s) -> s.WriteToDashboard());
+    SmartDashboard.putNumber("cameraMode", _cameraMode);
 
     if (_diagnosticsTimer >= 50){
       _robotMap.PrintDiagnostics();

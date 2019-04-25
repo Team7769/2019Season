@@ -275,6 +275,8 @@ public class DriveTrain implements Subsystem {
         SmartDashboard.putNumber("driveStraightRotationPIDP", _driveStraightPID.getP());
         SmartDashboard.putNumber("driveStraightRotationPIDI", _driveStraightPID.getI());
         SmartDashboard.putNumber("driveStraightRotationPIDD", _driveStraightPID.getD());
+        SmartDashboard.putNumber("targetAngle", _targetAngle);
+        SmartDashboard.putBoolean("pidEnabled", _pidEnabled);
         
     }
 
