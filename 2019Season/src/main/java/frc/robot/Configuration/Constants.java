@@ -147,7 +147,7 @@ public final class Constants {
     public static final double kVelocityPIDD = 0.0;
     public static final double kVelocityPIDFF = 0.0;
 
-    public static final double kDriveRotationP = 0.021;
+    public static final double kDriveRotationP = 0.040;
     public static final double kDriveRotationI = 0.0000001;
     public static final double kDriveRotationD = 0.0;
     public static final double kDriveRotationTolerance = 0.25; //.5 Degrees
